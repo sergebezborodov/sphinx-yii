@@ -39,6 +39,11 @@ class ESphinxSearchCriteria extends CComponent
     public $sortMode;
 
     /**
+     * @var string
+     */
+    private $_sortBy;
+
+    /**
      * @var array sort fields
      */
     private $_orders = array();
@@ -111,7 +116,7 @@ class ESphinxSearchCriteria extends CComponent
     public function addFilter($attribute, $value, $exclude = false, $key = null)
     {
         if (!is_string($attribute)) {
-            throw new SphinxSearchCriteriaException('Attribute must be a string');
+            throw new ESphinxException('Attribute must be a string');
         }
 
         $value = is_array($value) ? $value : array($value);
@@ -146,7 +151,7 @@ class ESphinxSearchCriteria extends CComponent
     public function addFilters($filters)
     {
         if (empty($filters) || !is_array($filters)) {
-            throw new SphinxSearchCriteriaException('Filters must be a non empty array');
+            throw new ESphinxException('Filters must be a non empty array');
         }
 
         foreach ($filters as $filter) {
@@ -209,7 +214,7 @@ class ESphinxSearchCriteria extends CComponent
     public function addRangeFilter($attribute, $min, $max, $exclude = false, $key = null)
     {
         if (empty($attribute) || !is_string($attribute) || !is_numeric($min) || !is_numeric($max)) {
-            throw new SphinxSearchCriteriaException('Check input data');
+            throw new ESphinxException('Check input data');
         }
 
         $float = is_float($min) || is_float($max);
@@ -255,13 +260,13 @@ class ESphinxSearchCriteria extends CComponent
     public function addRangeFilters($rangeFilters)
     {
         if (empty($rangeFilters)) {
-            throw new SphinxSearchCriteriaException('Filters must be a non empty array');
+            throw new ESphinxException('Filters must be a non empty array');
         }
 
         foreach ($rangeFilters as $rangeFilter) {
             if (empty($rangeFilter) || count($rangeFilter) < 3
                 || !isset($rangeFilter[0], $rangeFilter['min'], $rangeFilter['max'])) {
-                throw new SphinxSearchCriteriaException('Check input data');
+                throw new ESphinxException('Check input data');
             }
             $attribute = $rangeFilter[0];
             $exclude   = !empty($rangeFilter['exclude']);
@@ -309,6 +314,39 @@ class ESphinxSearchCriteria extends CComponent
     }
 
 
+    /**
+     * @return string
+     */
+    public function getSortBy()
+    {
+        if ($this->sortMode == ESphinxSort::EXTENDED) {
+            throw new ESphinxException('Use getSortBy is not allowen with EXTENDED sort mode, use getOrders');
+        }
+
+        return $this->_sortBy;
+    }
+
+    /**
+     * Sets sort for all modes, except EXTENDED
+     *
+     * @param string $value
+     */
+    public function setSortBy($value)
+    {
+        if ($this->sortMode == ESphinxSort::EXTENDED) {
+            throw new ESphinxException('Use getSortBy is not allowen with EXTENDED sort mode, use getOrders');
+        }
+
+        $this->_sortBy = $value;
+    }
+
+    private function checkIsExtendedOrderMode()
+    {
+        if ($this->sortMode != ESphinxSort::EXTENDED) {
+            throw new ESphinxException('addOrder method can uses only with EXTENDED sort mode, '
+                .'for other use sortBy property');
+        }
+    }
 
     /**
      * Add sort order
@@ -318,10 +356,10 @@ class ESphinxSearchCriteria extends CComponent
      */
     public function addOrder($attribute, $order)
     {
-        // TODO: sorting for another sort modes!!!
+        $this->checkIsExtendedOrderMode();
         $order = strtoupper($order);
         if ($order != 'ASC' && $order != 'DESC') {
-            throw new SphinxSearchCriteriaException('Invalid value for sorting direction');
+            throw new ESphinxException('Invalid value for sorting direction');
         }
 
         $this->_orders[$attribute] = $order;
@@ -338,8 +376,10 @@ class ESphinxSearchCriteria extends CComponent
      */
     public function addOrders($orders)
     {
+        $this->checkIsExtendedOrderMode();
+
         if (empty($orders) || !is_array($orders)) {
-            throw new SphinxSearchCriteriaException('Orders must be a non empty array');
+            throw new ESphinxException('Orders must be a non empty array');
         }
 
         foreach ($orders as $field => $value) {
@@ -352,6 +392,7 @@ class ESphinxSearchCriteria extends CComponent
      */
     public function setOrders($orders)
     {
+        $this->checkIsExtendedOrderMode();
         $this->cleanOrders();
         $this->addOrders($orders);
     }
@@ -361,6 +402,7 @@ class ESphinxSearchCriteria extends CComponent
      */
     public function cleanOrders()
     {
+        $this->checkIsExtendedOrderMode();
         $this->_orders = array();
     }
 
@@ -369,10 +411,9 @@ class ESphinxSearchCriteria extends CComponent
      */
     public function getOrders()
     {
+        $this->checkIsExtendedOrderMode();
         return $this->_orders;
     }
-
-
 
     /**
      * Add field weights
@@ -383,7 +424,7 @@ class ESphinxSearchCriteria extends CComponent
     public function addWeght($field, $weight)
     {
         if (!is_integer($weight)) {
-            throw new SphinxSearchCriteriaException('Field weight must be integer');
+            throw new ESphinxException('Field weight must be integer');
         }
 
         $this->_weights[$field] = $weight;
@@ -401,7 +442,7 @@ class ESphinxSearchCriteria extends CComponent
     public function addWeights($weights)
     {
         if (empty($weights) || !is_array($weights)) {
-            throw new SphinxSearchCriteriaException('Weights must be a non empty array');
+            throw new ESphinxException('Weights must be a non empty array');
         }
 
         foreach ($weights as $field => $value) {
@@ -462,12 +503,12 @@ class ESphinxSearchCriteria extends CComponent
      */
     public function addGroupBys($values) {
         if (empty($values) || !is_array($values)) {
-            throw new SphinxSearchCriteriaException('Groups must be a non empty array');
+            throw new ESphinxException('Groups must be a non empty array');
         }
 
         foreach ($values as $value) {
             if (!is_array($value) || count($value) < 2) {
-                throw new SphinxSearchCriteriaException('Invalid value for field');
+                throw new ESphinxException('Invalid value for field');
             }
             $this->addGroupBy($value[0], $value[1], isset($value[2]) ? $value[2] : null);
         }
