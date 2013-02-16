@@ -63,6 +63,22 @@ class ESphinxRank
     const FIELDMASK = 6;
 
     /**
+     * SPH_RANK_SPH04, added in version 1.10-beta, is generally based on the default SPH_RANK_PROXIMITY_BM25 ranker,
+     * but additionally boosts the matches when they occur in the very beginning or the very end of a text field.
+     * Thus, if a field equals the exact query, SPH04 should rank it higher than a field that contains
+     * the exact query but is not equal to it. (For instance, when the query is "Hyde Park",
+     * a document entitled "Hyde Park" should be ranked higher than
+     * a one entitled "Hyde Park, London" or "The Hyde Park Cafe".)
+     */
+    const SPH04 = 7;
+
+    const EXPR = 8;
+
+    const TOTAL = 9;
+
+
+
+    /**
      * List all rank modes.
      *
      * @return array
@@ -76,6 +92,9 @@ class ESphinxRank
             self::WORDCOUNT,
             self::MATCHANY,
             self::FIELDMASK,
+            self::SPH04,
+            self::EXPR,
+            self::TOTAL,
         );
     }
 
