@@ -32,12 +32,12 @@ class ESphinxQuery extends CComponent
 	{
 		$this->_text = (string)$text;
 
-		if ($criteria instanceof ESphinxCriteria) {
+		if ($criteria instanceof ESphinxSearchCriteria) {
 	        $this->_criteria = $criteria;
         } else if(is_array($criteria)) {
-			$this->_criteria = new ESphinxCriteria($criteria);
+			$this->_criteria = new ESphinxSearchCriteria($criteria);
         } else {
-            $this->_criteria = new ESphinxCriteria();
+            $this->_criteria = new ESphinxSearchCriteria;
         }
 
 	    if (is_array($indexes)) {

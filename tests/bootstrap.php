@@ -14,3 +14,4 @@ require ROOT.'/enums/ESphinxSort.php';
 
 require ROOT.'/ESphinxException.php';
 require ROOT.'/ESphinxSearchCriteria.php';
+require ROOT.'/ESphinxQuery.php';
