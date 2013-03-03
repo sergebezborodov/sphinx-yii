@@ -540,4 +540,14 @@ class ESphinxSearchCriteria extends CComponent
     {
         return $this->_groupBy;
     }
+
+    /**
+     * Check is limit setted.
+     *
+     * @return bool true if is limited
+     */
+    public function getIsLimited()
+    {
+        return (int)$this->limit > 0;
+    }
 }

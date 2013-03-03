@@ -3,7 +3,7 @@
 /**
  * Standart connecrtion to sphinx daemon
  */
-class ESphinxConnection extends EBaseSphinxConnection
+class ESphinxConnection extends ESphinxBaseConnection
 {
     /**
      * Instance of SphinxClient
@@ -17,9 +17,6 @@ class ESphinxConnection extends EBaseSphinxConnection
      */
     private $isConnected = false;
 
-
-    public function __construct()
-    {}
 
     /**
      * Init internal state
@@ -248,8 +245,9 @@ class ESphinxConnection extends EBaseSphinxConnection
     public function executeQueries(array $queries)
     {
         $this->resetClient();
-        foreach ($queries as $query)
+        foreach ($queries as $query) {
             $this->applyQuery($query);
+        }
 
         return $this->execute();
     }
@@ -262,25 +260,32 @@ class ESphinxConnection extends EBaseSphinxConnection
         $this->sphinxClient->AddQuery($query->getText(), $query->getIndexes());
     }
 
-    protected function applyCriteria(ESphinxCriteria $criteria)
+    protected function applyCriteria(ESphinxSearchCriteria $criteria)
     {
         $this->applyMatchMode($criteria->matchMode);
         $this->applyRankMode($criteria->rankMode);
         $this->applySortMode($criteria->sortMode);
         // apply select
-        if(strlen($criteria->select))
+        if (strlen($criteria->select)) {
             $this->sphinxClient->SetSelect($criteria->select);
+        }
+
         // apply limit
-        if($criteria->getIsLimited())
+        if($criteria->limit) {
             $this->sphinxClient->SetLimits(
                 $criteria->offset,
                 $criteria->limit,
                 $criteria->max_matches,
                 $criteria->cutoff
             );
-        // apply group
-        if($criteria->getIsGroupSetted())
-            $this->sphinxClient->SetGroupBy($criteria->getGroupBy(), $criteria->getGroupFunc());
+        }
+
+        // applu group
+        if ($groupArray = $criteria->getGroupBys()) {
+            foreach ($groupArray as $group) {
+                $this->sphinxClient->SetGroupBy($group['attribute'], $group['value'], $group['groupSort']);
+            }
+        }
 
         // apply id range
         if($criteria->getIsIdRangeSetted())
