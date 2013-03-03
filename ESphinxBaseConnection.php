@@ -21,6 +21,7 @@ abstract class ESphinxBaseConnection extends CComponent
      * @link http://www.sphinxsearch.com/docs/manual-0.9.9.html#api-func-open
      */
     abstract public function openConnection();
+
     /**
      * Close Sphinx persistent connection.
      * @throws ESphinxException if client is not connected.

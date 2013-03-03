@@ -1,6 +1,8 @@
 <?php
 
-
+/**
+ * Standart connecrtion to sphinx daemon
+ */
 class ESphinxConnection extends EBaseSphinxConnection
 {
     /**
@@ -370,6 +372,9 @@ class ESphinxConnection extends EBaseSphinxConnection
             $this->sphinxClient->SetRankingMode($mode);
     }
 
+    /**
+     * Reset internal state of sphinxClient
+     */
     protected function resetClient()
     {
         $this->sphinxClient->ResetFilters();
