@@ -264,7 +264,23 @@ class ESphinxConnection extends ESphinxBaseConnection
     {
         $this->applyMatchMode($criteria->matchMode);
         $this->applyRankMode($criteria->rankMode);
-        $this->applySortMode($criteria->sortMode);
+
+        if ($criteria->sortMode == ESphinxSort::EXTENDED) {
+            $orders = '';
+            if ($orderArray = $criteria->getOrders()) {
+                $fields = array();
+                foreach ($orderArray as $attr => $type) {
+                    $fields[] = $attr . ' ' . $type;
+                }
+                $orders = implode(', ', $fields);
+            }
+
+            $this->applySortMode($criteria->sortMode, $orders);
+        } else {
+            $this->applySortMode($criteria->sortMode, $criteria->getSortBy());
+        }
+
+
         // apply select
         if (strlen($criteria->select)) {
             $this->sphinxClient->SetSelect($criteria->select);
@@ -288,51 +304,33 @@ class ESphinxConnection extends ESphinxBaseConnection
         }
 
         // apply id range
-        if($criteria->getIsIdRangeSetted())
-            $this->sphinxClient->SetIDRange(
-                $criteria->getIdMin(),
-                $criteria->getIdMax()
-            );
+        if($criteria->getIsIdRangeSetted()) {
+            $this->sphinxClient->SetIDRange($criteria->getIdMin(), $criteria->getMaxId());
+        }
+
         // apply weights
         $this->applyFieldWeights($criteria->getFieldWeights());
         $this->applyIndexWeights($criteria->getIndexWeights());
-        // apply filters
-        $this->applyFilters($criteria->getInConditions());
-        $this->applyFilters($criteria->getNotInConditions(), true);
-        // apply ranges
-        $this->applyRanges($criteria->getInRanges());
-        $this->applyRanges($criteria->getNotInRanges(),true);
+
+        $this->applyFilters($criteria->getFilters());
+        $this->applyRanges($criteria->getRangeFilters());
     }
 
-    protected function applyRanges(array $ranges, $exclude=false)
+    protected function applyRanges(array $ranges)
     {
-        $exclude = (boolean)$exclude;
-        foreach($ranges as $field => $range)
-        {
-            $isFloat = is_float($range['max']) || is_float($range['min']);
-            if($isFloat)
-                $this->sphinxClient->SetFilterRange(
-                    $field,
-                    (float)$range['min'],
-                    (float)$range['max'],
-                    $exclude
-                );
-            else
-                $this->sphinxClient->SetFilterRange(
-                    $field,
-                    (int)$range['min'],
-                    (int)$range['max'],
-                    $exclude
-                );
+        foreach ($ranges as $rangeFilter) {
+            $method = $rangeFilter['float'] ? 'SetFilterFloatRange' : 'SetFilterRange';
+            $this->sphinxClient->$method($rangeFilter['attribute'],
+                $rangeFilter['min'], $rangeFilter['max'],
+                $rangeFilter['exclude']
+            );
         }
     }
 
-    protected function applyFilters(array $conditions, $exclude = false)
+    protected function applyFilters(array $conditions)
     {
-        $exclude = (boolean)$exclude;
-        foreach	($conditions as $field => $values)
-        {
-            $this->sphinxClient->SetFilter($field, $values, $exclude);
+        foreach ($conditions as $filter) {
+            $this->sphinxClient->SetFilter($filter['attribute'], $filter['value'], $filter['exclude']);
         }
     }
 
@@ -346,35 +344,40 @@ class ESphinxConnection extends ESphinxBaseConnection
 
     protected function applyFieldWeights(array $weights)
     {
-        foreach( $weights as $field => $weight )
+        foreach($weights as $field => $weight) {
             $weights[$field] = (int)$weight;
+        }
 
         $this->sphinxClient->SetFieldWeights($weights);
     }
 
-    protected function applySortMode($mode)
+    protected function applySortMode($mode, $sortBy = '')
     {
         $mode = (int)$mode;
-        if(in_array($mode,ESphinxCriteria::$sortModes))
-            $this->sphinxClient->SetSortMode($mode);
-        else
-            throw new ESphinxException("Search mode {$mode} is undefined");
+        if (!ESphinxSort::isValid($mode)) {
+            throw new ESphinxException("Sort mode {$mode} is undefined");
+        }
+
+        $this->sphinxClient->SetSortMode($mode, $sortBy);
     }
 
     protected function applyMatchMode($mode)
     {
         $mode = (int)$mode;
-        if(in_array($mode, ESphinxCriteria::$matchModes))
-            $this->sphinxClient->SetMatchMode($mode);
-        else
+        if (!ESphinxMath::isValid($mode)) {
             throw new ESphinxException("Match mode {$mode} is not defined");
+        }
+        $this->sphinxClient->SetMatchMode($mode);
     }
 
     protected function applyRankMode($mode)
     {
         $mode = (int)$mode;
-        if(in_array($mode, ESphinxCriteria::$rankModes))
-            $this->sphinxClient->SetRankingMode($mode);
+        if (!ESphinxRank::isValid($mode)) {
+            throw new ESphinxException("Rank mode {$mode} is not defined");
+        }
+
+        $this->sphinxClient->SetRankingMode($mode);
     }
 
     /**

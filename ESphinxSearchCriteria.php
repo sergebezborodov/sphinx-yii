@@ -41,7 +41,7 @@ class ESphinxSearchCriteria extends CComponent
     /**
      * @var string
      */
-    private $_sortBy;
+    private $_sortBy = "";
 
     /**
      * @var array sort fields
@@ -61,7 +61,12 @@ class ESphinxSearchCriteria extends CComponent
     /**
      * @var array fields weights
      */
-    private $_weights = array();
+    private $_fieldWeights = array();
+
+    /**
+     * @var array index weights
+     */
+    private $_indexWeights = array();
 
     /**
      * @var array group fields
@@ -72,6 +77,9 @@ class ESphinxSearchCriteria extends CComponent
      * @var string field for distinct group
      */
     public $groupDistinct;
+
+    private $_minId;
+    private $_maxId;
 
     /**
      * @var int query offset
@@ -421,13 +429,13 @@ class ESphinxSearchCriteria extends CComponent
      * @param string $field
      * @param int $weight
      */
-    public function addWeght($field, $weight)
+    public function addFieldWeight($field, $weight)
     {
         if (!is_integer($weight)) {
             throw new ESphinxException('Field weight must be integer');
         }
 
-        $this->_weights[$field] = $weight;
+        $this->_fieldWeights[$field] = $weight;
     }
 
     /**
@@ -439,14 +447,14 @@ class ESphinxSearchCriteria extends CComponent
      *
      * @param array $weights
      */
-    public function addWeights($weights)
+    public function addFieldWeights($weights)
     {
         if (empty($weights) || !is_array($weights)) {
             throw new ESphinxException('Weights must be a non empty array');
         }
 
         foreach ($weights as $field => $value) {
-            $this->addWeght($field, $value);
+            $this->addFieldWeight($field, $value);
         }
     }
 
@@ -455,27 +463,92 @@ class ESphinxSearchCriteria extends CComponent
      *
      * @param array $weights
      */
-    public function setWeights($weights)
+    public function setFieldWeights($weights)
     {
-        $this->cleanWeights();
-        $this->addWeights($weights);
+        $this->cleanFieldWeights();
+        $this->addFieldWeights($weights);
     }
 
     /**
      * Clean field weights
      */
-    public function cleanWeights()
+    public function cleanFieldWeights()
     {
-        $this->_weights = array();
+        $this->_fieldWeights = array();
     }
 
     /**
      * @return array
      */
-    public function getWeights()
+    public function getFieldWeights()
     {
         return $this->_weights;
     }
+
+
+    /**
+     * Add index weights
+     *
+     * @param string $index
+     * @param int $weight
+     */
+    public function addIndexWeight($index, $weight)
+    {
+        if (!is_integer($weight)) {
+            throw new ESphinxException('Index weight must be integer');
+        }
+
+        $this->_indexWeights[$index] = $weight;
+    }
+
+    /**
+     * Add group index weights <br/>
+     *      array( <br>
+     *          'index1' => 5, <br>
+     *          'index2' => 1, <br>
+     *      ) <br>
+     *
+     * @param array $weights
+     */
+    public function addIndexWeights($weights)
+    {
+        if (empty($weights) || !is_array($weights)) {
+            throw new ESphinxException('Weights must be a non empty array');
+        }
+
+        foreach ($weights as $field => $value) {
+            $this->addIndexWeight($field, $value);
+        }
+    }
+
+    /**
+     * Sets new field weights values, old values will be removed
+     *
+     * @param array $weights
+     */
+    public function setIndexWeights($weights)
+    {
+        $this->cleanIndexWeights();
+        $this->addIndexWeights($weights);
+    }
+
+    /**
+     * Clean field weights
+     */
+    public function cleanIndexWeights()
+    {
+        $this->_indexWeights = array();
+    }
+
+    /**
+     * @return array
+     */
+    public function getIndexWeights()
+    {
+        return $this->_indexWeights;
+    }
+
+
 
     /**
      * Add group by field
@@ -549,5 +622,47 @@ class ESphinxSearchCriteria extends CComponent
     public function getIsLimited()
     {
         return (int)$this->limit > 0;
+    }
+
+
+    /**
+     * Set filter by model id range
+     * @param int $min
+     * @param int $max
+     * @see getIdMax
+     * @see getIdMin
+     */
+    public function setIdRange($min, $max)
+    {
+        $this->_minId = (int)$min;
+        $this->_maxId = (int)$max;
+    }
+    /**
+     * Get maximum id in range
+     * @return int
+     * @see getIdMax
+     * @see setIdRange
+     */
+    public function getMaxId()
+    {
+        return $this->maxId;
+    }
+    /**
+     * Get minimum id in range
+     * @return int
+     * @see getIdMin
+     * @see setIdRange
+     */
+    public function getIdMin()
+    {
+        return $this->minId;
+    }
+    /**
+     * Check is id range setted
+     * @return bool
+     */
+    public function getIsIdRangeSetted()
+    {
+        return is_int($this->minId) && is_int($this->maxId);
     }
 }
