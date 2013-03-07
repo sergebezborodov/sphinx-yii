@@ -7,12 +7,14 @@ class ESphinxConnection extends ESphinxBaseConnection
 {
     /**
      * Instance of SphinxClient
+     *
      * @var SphinxClient $sphinxClient
      */
     private $sphinxClient;
 
     /**
-     * Flag check is client connected
+     * Flag fot check is client connected
+     *
      * @var bool defaults false
      */
     private $isConnected = false;
@@ -119,7 +121,7 @@ class ESphinxConnection extends ESphinxBaseConnection
      * @param integer $timeout
      * @link
      */
-    public function setQueryTimeout( $timeout )
+    public function setQueryTimeout($timeout)
     {
         $this->sphinxClient->SetMaxQueryTime((int)$timeout);
     }
@@ -296,7 +298,7 @@ class ESphinxConnection extends ESphinxBaseConnection
             );
         }
 
-        // applu group
+        // apply group
         if ($groupArray = $criteria->getGroupBys()) {
             foreach ($groupArray as $group) {
                 $this->sphinxClient->SetGroupBy($group['attribute'], $group['value'], $group['groupSort']);
@@ -336,8 +338,9 @@ class ESphinxConnection extends ESphinxBaseConnection
 
     protected function applyIndexWeights(array $weights)
     {
-        foreach( $weights as $index => $weight )
+        foreach( $weights as $index => $weight) {
             $weights[$index] = (int)$weight;
+        }
 
         $this->sphinxClient->SetIndexWeights($weights);
     }
@@ -403,18 +406,21 @@ class ESphinxConnection extends ESphinxBaseConnection
     {
         $sph = $this->sphinxClient->RunQueries();
 
-        if( $error = $this->sphinxClient->GetLastError() )
+        if ($error = $this->sphinxClient->GetLastError()) {
             throw new ESphinxException($error);
-        if( $error = $this->sphinxClient->GetLastWarning() )
+        }
+        if ($error = $this->sphinxClient->GetLastWarning()) {
             throw new ESphinxException($error);
-        if( !is_array($sph) )
+        }
+        if (!is_array($sph)) {
             throw new ESphinxException("Sphinx client returns result not array");
+        }
 
         $results = array();
-        foreach($sph as $result)
-        {
-            if(isset($result['error']) && strlen($result['error']))
+        foreach ($sph as $result) {
+            if (!empty($result['error'])) {
                 throw new ESphinxException($result['error']);
+            }
             $results[] = new ESphinxResult($result);
         }
         return $results;

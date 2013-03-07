@@ -70,7 +70,7 @@ class ESphinxQuery extends CComponent
 	/**
 	 * Get search criteria
      *
-	 * @return ESphinxCriteria
+	 * @return ESphinxSearchCriteria
 	 */
 	public function getCriteria()
 	{

@@ -84,10 +84,10 @@ class ESphinxDbConnection extends ESphinxBaseConnection
      */
     public function setServer(array $parameters = array())
     {
-        if(!isset ($parameters[0])) {
+        if (!isset ($parameters[0])) {
             $parameters[0] = $this->host;
         }
-        if(!isset ($parameters[1])) {
+        if (!isset ($parameters[1])) {
             $parameters[1] = $this->port;
         }
 
@@ -133,14 +133,12 @@ class ESphinxDbConnection extends ESphinxBaseConnection
         $excerts = array();
         $options = "";
         $optionParams = array();
-        foreach($opts as $name => $value)
-        {
+        foreach ($opts as $name => $value) {
             $options .= ", :{$name} as {$name}";
             $optionParams[":{$name}"] = $value;
         }
 
-        foreach($docs as $data)
-        {
+        foreach($docs as $data) {
             $query = $this->db->createCommand("CALL SNIPPETS(:data, :index, :words {$options} )");
             $query->params = $optionParams + array(
                 ":data", $data,
@@ -172,8 +170,8 @@ class ESphinxDbConnection extends ESphinxBaseConnection
         $command = $this->db->createCommand('CALL KEYWORDS(:query, :index)');
         // @todo check for hits
         $command->params = array(
-            ':query'=>$query,
-            ':index'=>$index,
+            ':query' => $query,
+            ':index' => $index,
         );
         return $command->queryAll();
     }
@@ -248,8 +246,7 @@ class ESphinxDbConnection extends ESphinxBaseConnection
         $matches = $command->queryAll();
         $metaInfo = $this->db->createCommand("SHOW META")->queryAll();
         $meta = array();
-        foreach($metaInfo as $item)
-        {
+        foreach ($metaInfo as $item) {
             list($name, $value) = array_values($item);
             $meta[$name] = $value;
         }
@@ -263,7 +260,7 @@ class ESphinxDbConnection extends ESphinxBaseConnection
      */
     private function createDbCriteria(ESphinxQuery $query)
     {
-        $criteria = new CDbCriteria();
+        $criteria = new CDbCriteria;
         $this->applySelect($criteria, $query);
         $this->applyCondition($criteria, $query);
         $this->applyGroup($criteria, $query);
@@ -295,8 +292,9 @@ class ESphinxDbConnection extends ESphinxBaseConnection
     private function applyOrder(CDbCriteria $criteria, ESphinxQuery $query)
     {
         $queryCriteria = $query->getCriteria();
-        if($queryCriteria->order)
+        if ($queryCriteria->order) {
             $criteria->order = $queryCriteria->order;
+        }
     }
 
 
@@ -309,7 +307,7 @@ class ESphinxDbConnection extends ESphinxBaseConnection
     private function applyGroup(CDbCriteria $criteria, ESphinxQuery $query)
     {
         $queryCriteria = $query->getCriteria();
-        if($queryCriteria->getGroupBy()) {
+        if ($queryCriteria->getGroupBy()) {
             $criteria->group = $queryCriteria->getGroupBy();
         }
     }
