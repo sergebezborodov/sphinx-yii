@@ -1,3 +1,4 @@
 .idea/*
 dev/*
 .DS_Store
+ESphinxDbConnection.php
