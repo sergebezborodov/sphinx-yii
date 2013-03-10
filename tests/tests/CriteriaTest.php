@@ -210,41 +210,79 @@ class CriteriaTest extends PHPUnit_Framework_TestCase
         $this->assertNull($criteria->getSortBy());
     }
 
-    public function testWeights()
+    public function testFieldWeights()
     {
         $criteria = new ESphinxSearchCriteria;
 
         try {
-            $criteria->addWeght('', '');
+            $criteria->addFieldWeight('', '');
             $this->setExpectedException('ESphinxException');
         } catch(Exception $e) { $this->assertInstanceOf('ESphinxException', $e); }
         try {
-            $criteria->addWeght('field', '123');
+            $criteria->addFieldWeight('field', '123');
             $this->setExpectedException('ESphinxException');
         } catch(Exception $e) { $this->assertInstanceOf('ESphinxException', $e); }
         try {
-            $criteria->addWeght('field', 123.0);
+            $criteria->addFieldWeight('field', 123.0);
             $this->setExpectedException('ESphinxException');
         } catch(Exception $e) { $this->assertInstanceOf('ESphinxException', $e); }
 
-        $criteria->addWeght('field', 123);
-        $criteria->addWeght('field2', 123);
-        $this->assertEquals($criteria->getWeights(), array(
+        $criteria->addFieldWeight('field', 123);
+        $criteria->addFieldWeight('field2', 123);
+        $this->assertEquals($criteria->getFieldWeights(), array(
             'field' => 123,
             'field2' => 123,
         ));
 
-        $criteria->cleanWeights();
-        $this->assertEquals($criteria->getWeights(), array());
+        $criteria->cleanFieldWeights();
+        $this->assertEquals($criteria->getFieldWeights(), array());
 
-        $criteria->addWeights(array(
+        $criteria->addFieldWeights(array(
             'field' => 123,
             'field2' => 123,
         ));
 
-        $this->assertEquals($criteria->getWeights(), array(
+        $this->assertEquals($criteria->getFieldWeights(), array(
             'field' => 123,
             'field2' => 123,
+        ));
+    }
+
+    public function testIndexWeights()
+    {
+        $criteria = new ESphinxSearchCriteria;
+
+        try {
+            $criteria->addIndexWeight('', '');
+            $this->setExpectedException('ESphinxException');
+        } catch(Exception $e) { $this->assertInstanceOf('ESphinxException', $e); }
+        try {
+            $criteria->addIndexWeight('index', '123');
+            $this->setExpectedException('ESphinxException');
+        } catch(Exception $e) { $this->assertInstanceOf('ESphinxException', $e); }
+        try {
+            $criteria->addIndexWeight('index', 123.0);
+            $this->setExpectedException('ESphinxException');
+        } catch(Exception $e) { $this->assertInstanceOf('ESphinxException', $e); }
+
+        $criteria->addIndexWeight('index', 123);
+        $criteria->addIndexWeight('index2', 123);
+        $this->assertEquals($criteria->getIndexWeights(), array(
+            'index' => 123,
+            'index2' => 123,
+        ));
+
+        $criteria->cleanIndexWeights();
+        $this->assertEquals($criteria->getIndexWeights(), array());
+
+        $criteria->addIndexWeights(array(
+            'index' => 123,
+            'index2' => 123,
+        ));
+
+        $this->assertEquals($criteria->getIndexWeights(), array(
+            'index' => 123,
+            'index2' => 123,
         ));
     }
 
@@ -288,7 +326,7 @@ class CriteriaTest extends PHPUnit_Framework_TestCase
                 'field1' => 'asc',
                 'field2' => 'desc',
             ),
-            'weights' => array(
+            'fieldWeights' => array(
                 'field' => 123,
                 'field2' => 123,
             ),
@@ -318,7 +356,7 @@ class CriteriaTest extends PHPUnit_Framework_TestCase
             'field2' => 'DESC',
         ));
 
-        $this->assertEquals($criteria->getWeights(), array(
+        $this->assertEquals($criteria->getFieldWeights(), array(
             'field' => 123,
             'field2' => 123,
         ));

@@ -1,10 +1,10 @@
 <?php
 
-class CException extends Exception {}
 
 define('ROOT', realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'));
 
-require 'CComponent.php';
+require ROOT.'/../../framework/yii.php';
+
 require ROOT.'/sphinxapi.php';
 
 require ROOT.'/enums/ESphinxGroup.php';

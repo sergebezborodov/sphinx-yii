@@ -482,7 +482,7 @@ class ESphinxSearchCriteria extends CComponent
      */
     public function getFieldWeights()
     {
-        return $this->_weights;
+        return $this->_fieldWeights;
     }
 
 
