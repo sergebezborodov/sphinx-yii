@@ -14,8 +14,8 @@ class QueryTest extends PHPUnit_Framework_TestCase
     {
         $criteriaData = array(
             'rankingMode' => ESphinxRank::BM25,
-            'sortMode' => ESphinxSort::ATTR_DESC,
-            'sortBy'   => 'field1',
+            'sortMode'    => ESphinxSort::ATTR_DESC,
+            'sortBy'      => 'field1',
         );
         $criteria = new ESphinxSearchCriteria($criteriaData);
         $query = new ESphinxQuery('text', 'index', $criteria);
