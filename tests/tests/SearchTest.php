@@ -8,6 +8,8 @@ class SearchTest extends CDbTestCase
         $this->getFixtureManager()->resetTable('article');
         $this->getFixtureManager()->loadFixture('article');
 
+        exec('./setup.sh');
+
         parent::setUp();
     }
 

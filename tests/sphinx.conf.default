@@ -1,0 +1,80 @@
+source shared {
+    type = mysql
+
+    sql_host = localhost
+    sql_user = root
+    sql_pass =
+    sql_db = sphinx_test
+
+
+    sql_query_pre = SET NAMES UTF8
+    sql_query_pre = set session character_set_server="UTF8"
+    sql_query_pre = set session character_set_database="UTF8"
+    sql_query_pre = set session character_set_connection="UTF8"
+    sql_query_pre = set session character_set_results="UTF8"
+    sql_query_pre = set session character_set_client="UTF8"
+}
+
+
+source article : shared
+{
+    sql_query = SELECT * FROM article WHERE 1 = 1
+
+    sql_attr_timestamp = date_updated
+    sql_attr_uint = user_id
+    sql_attr_float = rating
+}
+
+index article
+{
+    source = article
+    charset_type = utf-8
+    morphology = stem_enru
+    html_strip = 1
+    index_exact_words = 1
+    enable_star = 1
+    path = /tmp/sphinx-article # only for tests, do not this for real projects
+}
+
+
+indexer
+{
+	# memory limit, in bytes, kiloytes (16384K) or megabytes (256M)
+	# optional, default is 32M, max is 2047M, recommended is 256M to 1024M
+	mem_limit			= 32M
+}
+
+searchd
+{
+
+	listen=127.0.0.1:9876
+	# log file, searchd run info is logged here
+	# optional, default is 'searchd.log'
+	log					= /tmp/test-searchd.log
+
+	# maximum amount of children to fork (concurrent searches to run)
+	# optional, default is 0 (unlimited)
+	max_children		= 0
+
+	# PID file, searchd process ID file name
+	# mandatory
+	pid_file			= /tmp/test-searchd.pid
+
+	# max amount of matches the daemon ever keeps in RAM, per-index
+	# WARNING, THERE'S ALSO PER-QUERY LIMIT, SEE SetLimits() API CALL
+	# default is 1000 (just like Google)
+	max_matches			= 200000
+
+	# seamless rotate, prevents rotate stalls if precaching huge datasets
+	# optional, default is 1
+	seamless_rotate		= 1
+
+	# whether to forcibly preopen all indexes on startup
+	# optional, default is 0 (do not preopen)
+	preopen_indexes		= 0
+
+	# whether to unlink .old index copies on succesful rotation.
+	# optional, default is 1 (do unlink)
+	unlink_old			= 1
+}
+
