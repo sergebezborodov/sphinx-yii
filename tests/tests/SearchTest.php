@@ -13,8 +13,23 @@ class SearchTest extends CDbTestCase
         parent::setUp();
     }
 
-    public function testTest()
-    {
 
+    /**
+     * @return ESphinxConnection
+     */
+    protected function createConnection()
+    {
+        $sphinx = new ESphinxConnection;
+        $sphinx->setServer(array('localhost', 9876));
+        $sphinx->init();
+
+        return $sphinx;
+    }
+
+    public function testCreate()
+    {
+        $sphinx = $this->createConnection();
+        $this->assertInstanceOf('ESphinxConnection', $sphinx);
+        $this->assertFalse($sphinx->getIsConnected());
     }
 }

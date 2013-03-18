@@ -24,6 +24,9 @@ require ROOT.'/ESphinxException.php';
 require ROOT.'/ESphinxSearchCriteria.php';
 require ROOT.'/ESphinxQuery.php';
 
+require ROOT . '/ESphinxBaseConnection.php';
+require ROOT . '/ESphinxConnection.php';
+
 require 'TestApplication.php';
 Yii::import('system.test.*');
 
