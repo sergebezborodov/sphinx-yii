@@ -23,6 +23,7 @@ require ROOT.'/enums/ESphinxSort.php';
 require ROOT.'/ESphinxException.php';
 require ROOT.'/ESphinxSearchCriteria.php';
 require ROOT.'/ESphinxQuery.php';
+require ROOT.'/ESphinxResult.php';
 
 require ROOT . '/ESphinxBaseConnection.php';
 require ROOT . '/ESphinxConnection.php';

@@ -280,7 +280,7 @@ class ESphinxConnection extends ESphinxBaseConnection
     protected function applyCriteria(ESphinxSearchCriteria $criteria)
     {
         $this->applyMatchMode($criteria->matchMode);
-        $this->applyRankMode($criteria->rankMode);
+        $this->applyRankMode($criteria->rankingMode);
 
         if ($criteria->sortMode == ESphinxSort::EXTENDED) {
             $orders = '';
@@ -308,8 +308,8 @@ class ESphinxConnection extends ESphinxBaseConnection
             $this->sphinxClient->SetLimits(
                 $criteria->offset,
                 $criteria->limit,
-                $criteria->max_matches,
-                $criteria->cutoff
+                $criteria->maxMatches,
+                $criteria->cutOff
             );
         }
 

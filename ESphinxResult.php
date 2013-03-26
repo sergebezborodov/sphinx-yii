@@ -3,7 +3,7 @@
 /**
  * Class represents query results from sphinx
  */
-class ESphinxResult extends CComponent implements Iterator
+class ESphinxResult extends CComponent implements Iterator, ArrayAccess
 {
 	/**
 	 * @var array
@@ -117,7 +117,7 @@ class ESphinxResult extends CComponent implements Iterator
 		$this->_index++;
 		if(isset($this->_matches[$this->_index])) {
 			if(!isset($this->_match_objects[$this->_index])) {
-				$this->_match_objects[$this->_index] = new ESphinxMatch($this->_matches[$this->_index]);
+				$this->_match_objects[$this->_index] = new ESphinxMatchResult($this->_matches[$this->_index]);
 			}
 	        $this->_row = $this->_match_objects[$this->_index];
 		} else {
@@ -147,10 +147,81 @@ class ESphinxResult extends CComponent implements Iterator
 	{
 		return $this->_row !== null;
 	}
+
+    /**
+     * (PHP 5 &gt;= 5.0.0)<br/>
+     * Whether a offset exists
+     * @link http://php.net/manual/en/arrayaccess.offsetexists.php
+     * @param mixed $offset <p>
+     * An offset to check for.
+     * </p>
+     * @return boolean true on success or false on failure.
+     * </p>
+     * <p>
+     * The return value will be casted to boolean if non-boolean was returned.
+     */
+    public function offsetExists($offset)
+    {
+        return isset($this->_matches[$offset]);
+    }
+
+    /**
+     * (PHP 5 &gt;= 5.0.0)<br/>
+     * Offset to retrieve
+     * @link http://php.net/manual/en/arrayaccess.offsetget.php
+     * @param mixed $offset <p>
+     * The offset to retrieve.
+     * </p>
+     * @return mixed Can return all value types.
+     */
+    public function offsetGet($offset)
+    {
+        if (!isset($this->_matches[$offset])) {
+            return null;
+        }
+
+        if (!isset($this->_match_objects[$offset])) {
+            $this->_match_objects[$offset] = new ESphinxMatchResult($this->_matches[$offset]);
+        }
+        return $this->_match_objects[$offset];
+    }
+
+    /**
+     * (PHP 5 &gt;= 5.0.0)<br/>
+     * Offset to set
+     * @link http://php.net/manual/en/arrayaccess.offsetset.php
+     * @param mixed $offset <p>
+     * The offset to assign the value to.
+     * </p>
+     * @param mixed $value <p>
+     * The value to set.
+     * </p>
+     * @return void
+     */
+    public function offsetSet($offset, $value)
+    {
+        throw new ESphinxException('Search result is readonly');
+    }
+
+    /**
+     * (PHP 5 &gt;= 5.0.0)<br/>
+     * Offset to unset
+     * @link http://php.net/manual/en/arrayaccess.offsetunset.php
+     * @param mixed $offset <p>
+     * The offset to unset.
+     * </p>
+     * @return void
+     */
+    public function offsetUnset($offset)
+    {
+        throw new ESphinxException('Search result is readonly');
+    }
+
+
 }
 
 
-class ESphinxMatch extends CComponent
+class ESphinxMatchResult extends CComponent
 {
 	private $_match;
 	private $_weight;
@@ -167,6 +238,11 @@ class ESphinxMatch extends CComponent
 	    $this->_weight = (int)$match['weight'];
 	    $this->_attributes = (array)$match['attrs'];
 	}
+
+    public function getId()
+    {
+        return $this->_id;
+    }
 
     /**
      * @param string $name
@@ -209,6 +285,11 @@ class ESphinxMatch extends CComponent
 
         throw new ESphinxException("Attribute \"{$name}\" is not defined");
 	}
+
+    public function getAttributes()
+    {
+        return $this->_attributes;
+    }
 
     /**
      * @param string $name

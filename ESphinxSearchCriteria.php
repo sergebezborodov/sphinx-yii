@@ -645,7 +645,7 @@ class ESphinxSearchCriteria extends CComponent
      */
     public function getMaxId()
     {
-        return $this->maxId;
+        return $this->_maxId;
     }
     /**
      * Get minimum id in range
@@ -655,7 +655,7 @@ class ESphinxSearchCriteria extends CComponent
      */
     public function getIdMin()
     {
-        return $this->minId;
+        return $this->_minId;
     }
     /**
      * Check is id range setted
@@ -663,6 +663,6 @@ class ESphinxSearchCriteria extends CComponent
      */
     public function getIsIdRangeSetted()
     {
-        return is_int($this->minId) && is_int($this->maxId);
+        return is_int($this->_minId) && is_int($this->_maxId);
     }
 }
