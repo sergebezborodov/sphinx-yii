@@ -33,7 +33,7 @@ class SearchTest extends CDbTestCase
         $this->assertFalse($sphinx->getIsConnected());
     }
 
-    public function testQuery()
+    public function testSimpleQuery()
     {
         $sphinx = $this->createConnection();
 
@@ -48,6 +48,20 @@ class SearchTest extends CDbTestCase
 
         $this->assertEquals($math->getId(), 1);
         $this->assertEquals($math->getAttribute('id'), 1);
+    }
 
+    public function testQueryWithParams()
+    {
+        $sphinx = $this->createConnection();
+
+        $query = new ESphinxQuery('Article with Title', '*', array(
+            'filters' => array(
+                array('user_id', array(1000, 2000))
+            )
+        ));
+        $result = $sphinx->executeQuery($query);
+        $this->assertInstanceOf('ESphinxResult', $result);
+
+        $this->assertEquals($result->getFound(), 2);
     }
 }

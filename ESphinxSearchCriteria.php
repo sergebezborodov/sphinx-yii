@@ -89,7 +89,7 @@ class ESphinxSearchCriteria extends CComponent
     /**
      * @var int resuls limit
      */
-    public $limit = 1;
+    public $limit = 20;
 
     /**
      * @var int max query result size

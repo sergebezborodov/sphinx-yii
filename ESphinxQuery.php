@@ -26,7 +26,7 @@ class ESphinxQuery extends CComponent
 	 * 
 	 * @param string $text search phrase
 	 * @param string $indexes list of indexes
-	 * @param ESphinxSearchCriteria $criteria search criterias
+	 * @param ESphinxSearchCriteria|array $criteria search criteria
 	 */
 	public function __construct($text, $indexes="*", $criteria = null)
 	{
