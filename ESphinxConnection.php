@@ -261,8 +261,8 @@ class ESphinxConnection extends ESphinxBaseConnection
      */
     public function executeQueries(array $queries)
     {
-        $this->resetClient();
         foreach ($queries as $query) {
+            $this->resetClient();
             $this->applyQuery($query);
         }
 

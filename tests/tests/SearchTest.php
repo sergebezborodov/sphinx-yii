@@ -64,4 +64,36 @@ class SearchTest extends CDbTestCase
 
         $this->assertEquals($result->getFound(), 2);
     }
+
+    public function testQueries()
+    {
+        $sphinx = $this->createConnection();
+
+        $query1 = new ESphinxQuery('Article with Title', '*', array('filters' => array(
+            array('user_id', array(1000, 2000))
+        )));
+        $query2 = new ESphinxQuery('Article with Title', '*', array('filters' => array(
+            array('user_id', array(3000, 4000))
+        )));
+
+        $result = $sphinx->executeQueries(array($query1, $query2));
+        $this->assertCount(2, $result);
+
+        $result1 = $result[0];
+        $result2 = $result[1];
+
+        $this->assertEquals($result1->getFoundTotal(), 2);
+        $this->assertEquals($result2->getFoundTotal(), 2);
+
+        $this->assertEquals($result1[0]->id, 1);
+        $this->assertEquals($result1[1]->id, 2);
+
+        $this->assertEquals($result2[0]->id, 3);
+        $this->assertEquals($result2[1]->id, 4);
+    }
+
+    public function testCriteriaSimple()
+    {
+        $sphinx = $this->createConnection();
+    }
 }
