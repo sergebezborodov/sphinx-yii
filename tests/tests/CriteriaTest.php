@@ -292,7 +292,7 @@ class CriteriaTest extends PHPUnit_Framework_TestCase
 
         $criteria->addGroupBy('field', ESphinxGroup::BY_ATTR);
         $this->assertEquals($criteria->getGroupBys(), array(
-            array('attribute' => 'field', 'value' => ESphinxGroup::BY_ATTR, 'groupSort' => null),
+            array('attribute' => 'field', 'value' => ESphinxGroup::BY_ATTR, 'groupSort' => '@group desc'),
         ));
 
         $criteria->cleanGroupBy();

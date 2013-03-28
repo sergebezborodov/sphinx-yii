@@ -557,7 +557,7 @@ class ESphinxSearchCriteria extends CComponent
      * @param string $func
      * @param string|null $groupSort
      */
-    public function addGroupBy($attribute, $func, $groupSort = null)
+    public function addGroupBy($attribute, $func, $groupSort = '@group desc')
     {
         $this->_groupBy[] = array(
             'attribute' => $attribute,

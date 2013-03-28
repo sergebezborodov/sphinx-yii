@@ -163,13 +163,35 @@ class SearchTest extends CDbTestCase
         $criteria = new ESphinxSearchCriteria;
         $criteria->sortMode = ESphinxSort::EXTENDED;
 
-        $criteria->addOrder('id', 'DESC');
         $criteria->addOrder('user_id', 'ASC');
+        $criteria->addOrder('id', 'DESC');
 
         $query = new ESphinxQuery('', '*', $criteria);
         $result = $sphinx->executeQuery($query);
 
-//        dd($result);
+        $this->assertEquals($result->getFound(), 5);
 
+        $this->assertEquals($result[0]->id, 1);
+        $this->assertEquals($result[1]->id, 2);
+        $this->assertEquals($result[2]->id, 3);
+        $this->assertEquals($result[3]->id, 5);
+        $this->assertEquals($result[4]->id, 4);
+    }
+
+    public function testGroupBy()
+    {
+        $sphinx = $this->createConnection();
+        $criteria = new ESphinxSearchCriteria;
+        $criteria->addGroupBy('user_id', ESphinxGroup::BY_ATTR);
+
+        $query = new ESphinxQuery('', '*', $criteria);
+        $result = $sphinx->executeQuery($query);
+
+        $this->assertEquals(4, $result->getFound());
+
+        $first = $result[0];
+
+        $this->assertEquals(4000, $first->user_id);
+        $this->assertEquals(2, $first->{'@count'});
     }
 }
