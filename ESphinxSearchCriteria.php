@@ -51,7 +51,7 @@ class ESphinxSearchCriteria extends CComponent
     /**
      * @var int
      */
-    public $matchMode = 0;
+    public $matchMode = ESphinxMath::ALL;
 
     /**
      * @var int
@@ -637,8 +637,11 @@ class ESphinxSearchCriteria extends CComponent
         $this->_minId = (int)$min;
         $this->_maxId = (int)$max;
     }
+
+
     /**
      * Get maximum id in range
+     *
      * @return int
      * @see getIdMax
      * @see setIdRange
@@ -647,8 +650,20 @@ class ESphinxSearchCriteria extends CComponent
     {
         return $this->_maxId;
     }
+
+    /**
+     * Set max id value
+     *
+     * @param int $max
+     */
+    public function setMaxId($max)
+    {
+        $this->_maxId = intval($max);
+    }
+
     /**
      * Get minimum id in range
+     *
      * @return int
      * @see getIdMin
      * @see setIdRange
@@ -657,6 +672,18 @@ class ESphinxSearchCriteria extends CComponent
     {
         return $this->_minId;
     }
+
+
+    /**
+     * Set min id value
+     *
+     * @param int $min
+     */
+    public function setMinId($min)
+    {
+        $this->_minId = intval($min);
+    }
+
     /**
      * Check is id range setted
      * @return bool

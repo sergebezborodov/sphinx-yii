@@ -3,6 +3,10 @@
 /**
  * Class implements sphinx query model.
  * Query contains search text, indexes list, and sphinx criteria.
+ *
+ * @property ESphinxSearchCriteria $criteria
+ * @property string $text
+ * @property string $indexes
  */
 class ESphinxQuery extends CComponent
 {
@@ -28,7 +32,7 @@ class ESphinxQuery extends CComponent
 	 * @param string $indexes list of indexes
 	 * @param ESphinxSearchCriteria|array $criteria search criteria
 	 */
-	public function __construct($text, $indexes="*", $criteria = null)
+    public function __construct($text, $indexes = "*", $criteria = null)
 	{
 		$this->_text = (string)$text;
 

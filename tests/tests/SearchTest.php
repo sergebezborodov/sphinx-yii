@@ -20,7 +20,7 @@ class SearchTest extends CDbTestCase
     protected function createConnection()
     {
         $sphinx = new ESphinxConnection;
-        $sphinx->setServer(array('localhost', 9876));
+        $sphinx->setServer(array('localhost', 9877));
         $sphinx->init();
 
         return $sphinx;
@@ -37,7 +37,9 @@ class SearchTest extends CDbTestCase
     {
         $sphinx = $this->createConnection();
 
-        $query = new ESphinxQuery('First Article with Title');
+        $query = new ESphinxQuery('First Article with Title', 'article', array(
+            'matchMode' => ESphinxMath::PHRASE,
+        ));
 
         $result = $sphinx->executeQuery($query);
         $this->assertInstanceOf('ESphinxResult', $result);
@@ -83,17 +85,91 @@ class SearchTest extends CDbTestCase
         $result2 = $result[1];
 
         $this->assertEquals($result1->getFoundTotal(), 2);
-        $this->assertEquals($result2->getFoundTotal(), 2);
+        $this->assertEquals($result2->getFoundTotal(), 3);
 
         $this->assertEquals($result1[0]->id, 1);
         $this->assertEquals($result1[1]->id, 2);
 
         $this->assertEquals($result2[0]->id, 3);
         $this->assertEquals($result2[1]->id, 4);
+        $this->assertEquals($result2[2]->id, 5);
     }
 
-    public function testCriteriaSimple()
+    public function testFilters()
     {
         $sphinx = $this->createConnection();
+
+        $query1 = new ESphinxQuery('Article with Title', '*', array(
+            'filters'      => array(array('user_id', array(1000, 2000))),
+            'rangeFilters' => array(array('rating', 'min' => 1.4, 'max' => 1.4)),
+        ));
+
+        $result = $sphinx->executeQuery($query1);
+        $this->assertEquals($result->getFound(), 1);
+    }
+
+    public function testIdFilter()
+    {
+        $sphinx = $this->createConnection();
+
+        $query = new ESphinxQuery('', '*', array(
+            'minId' => 2,
+            'maxId' => 3,
+        ));
+
+        $result = $sphinx->executeQuery($query);
+        $this->assertEquals($result->getFound(), 2);
+
+        $this->assertEquals($result[0]->id, 2);
+        $this->assertEquals($result[1]->id, 3);
+    }
+
+    public function testSimpleSort()
+    {
+        $sphinx = $this->createConnection();
+
+        $criteria = new ESphinxSearchCriteria;
+        $criteria->sortMode = ESphinxSort::ATTR_DESC;
+        $criteria->setSortBy('user_id');
+
+        $query = new ESphinxQuery('', '*', $criteria);
+        $result = $sphinx->executeQuery($query);
+
+        $this->assertEquals($result->getFound(), 5);
+
+        $this->assertEquals($result[0]->id, 4);
+        $this->assertEquals($result[1]->id, 5);
+        $this->assertEquals($result[2]->id, 3);
+        $this->assertEquals($result[3]->id, 2);
+        $this->assertEquals($result[4]->id, 1);
+
+        $criteria->sortMode = ESphinxSort::ATTR_ASC;
+
+        $query = new ESphinxQuery('', '*', $criteria);
+        $result = $sphinx->executeQuery($query);
+
+        $this->assertEquals($result->getFound(), 5);
+
+        $this->assertEquals($result[0]->id, 1);
+        $this->assertEquals($result[1]->id, 2);
+        $this->assertEquals($result[2]->id, 3);
+        $this->assertEquals($result[3]->id, 4);
+        $this->assertEquals($result[4]->id, 5);
+    }
+
+    public function testExtendedSort()
+    {
+        $sphinx = $this->createConnection();
+        $criteria = new ESphinxSearchCriteria;
+        $criteria->sortMode = ESphinxSort::EXTENDED;
+
+        $criteria->addOrder('id', 'DESC');
+        $criteria->addOrder('user_id', 'ASC');
+
+        $query = new ESphinxQuery('', '*', $criteria);
+        $result = $sphinx->executeQuery($query);
+
+//        dd($result);
+
     }
 }
