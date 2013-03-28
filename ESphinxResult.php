@@ -3,7 +3,7 @@
 /**
  * Class represents query results from sphinx
  */
-class ESphinxResult extends CComponent implements Iterator, ArrayAccess
+class ESphinxResult extends CComponent implements Iterator, ArrayAccess, Countable
 {
 	/**
 	 * @var array
@@ -217,7 +217,19 @@ class ESphinxResult extends CComponent implements Iterator, ArrayAccess
         throw new ESphinxException('Search result is readonly');
     }
 
-
+    /**
+     * (PHP 5 &gt;= 5.1.0)<br/>
+     * Count elements of an object
+     * @link http://php.net/manual/en/countable.count.php
+     * @return int The custom count as an integer.
+     * </p>
+     * <p>
+     * The return value is cast to an integer.
+     */
+    public function count()
+    {
+        return count($this->_matches);
+    }
 }
 
 

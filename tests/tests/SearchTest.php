@@ -194,4 +194,14 @@ class SearchTest extends CDbTestCase
         $this->assertEquals(4000, $first->user_id);
         $this->assertEquals(2, $first->{'@count'});
     }
+
+    public function testLimit()
+    {
+        $sphinx = $this->createConnection();
+
+        $query = new ESphinxQuery('', '*', array('limit' => 2));
+        $result = $sphinx->executeQuery($query);
+
+        $this->assertEquals(2, count($result));
+    }
 }
