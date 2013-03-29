@@ -1,7 +1,10 @@
 <?php
 
 /**
- * Standart connecrtion to sphinx daemon
+ * Standart connection to sphinx daemon
+ *
+ * @property int $connectionTimeout
+ * @property int $queryTimeout
  */
 class ESphinxConnection extends ESphinxBaseConnection
 {
@@ -167,7 +170,6 @@ class ESphinxConnection extends ESphinxBaseConnection
      */
     public function createExcerts(array $docs, $index, $words, array $opts = array())
     {
-        $this->openConnectionIfNeed();
         return $this->sphinxClient->BuildExcerpts($docs, $index, $words, $opts);
     }
 
@@ -186,7 +188,6 @@ class ESphinxConnection extends ESphinxBaseConnection
      */
     public function createKeywords($query, $index, $hits = false)
     {
-        $this->openConnectionIfNeed();
         return $this->sphinxClient->BuildKeywords($query, $index, $hits);
     }
 
@@ -217,7 +218,6 @@ class ESphinxConnection extends ESphinxBaseConnection
      */
     public function update($index, array $attrs, array $values, $mfa=false)
     {
-        $this->openConnectionIfNeed();
         return $this->sphinxClient->UpdateAttributes($index, $attrs, $values, $mfa);
     }
 
@@ -268,8 +268,6 @@ class ESphinxConnection extends ESphinxBaseConnection
 
         return $this->execute();
     }
-
-
 
     protected function applyQuery(ESphinxQuery $query)
     {
@@ -419,8 +417,6 @@ class ESphinxConnection extends ESphinxBaseConnection
 
     protected function execute()
     {
-        $this->openConnectionIfNeed();
-
         $sph = $this->sphinxClient->RunQueries();
 
         if ($error = $this->sphinxClient->GetLastError()) {
