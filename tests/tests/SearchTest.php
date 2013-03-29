@@ -38,7 +38,7 @@ class SearchTest extends CDbTestCase
         $sphinx = $this->createConnection();
 
         $query = new ESphinxQuery('First Article with Title', 'article', array(
-            'matchMode' => ESphinxMath::PHRASE,
+            'matchMode' => ESphinxMatch::PHRASE,
         ));
 
         $result = $sphinx->executeQuery($query);

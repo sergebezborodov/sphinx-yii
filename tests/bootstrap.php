@@ -16,7 +16,7 @@ require ROOT.'/../../framework/yii.php';
 require ROOT.'/sphinxapi.php';
 
 require ROOT.'/enums/ESphinxGroup.php';
-require ROOT.'/enums/ESphinxMath.php';
+require ROOT.'/enums/ESphinxMatch.php';
 require ROOT.'/enums/ESphinxRank.php';
 require ROOT.'/enums/ESphinxSort.php';
 

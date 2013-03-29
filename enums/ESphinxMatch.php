@@ -3,7 +3,7 @@
 /**
  * Sphinx Math Modes
  */
-class ESphinxMath
+class ESphinxMatch
 {
     /**
      * Matches all query words (default mode).

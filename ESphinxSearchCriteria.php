@@ -51,7 +51,7 @@ class ESphinxSearchCriteria extends CComponent
     /**
      * @var int
      */
-    public $matchMode = ESphinxMath::ALL;
+    public $matchMode = ESphinxMatch::ALL;
 
     /**
      * @var int

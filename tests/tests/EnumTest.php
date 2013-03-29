@@ -16,13 +16,13 @@ class EnumTest extends PHPUnit_Framework_TestCase
 
     public function testMath()
     {
-        $this->assertEquals(ESphinxMath::ALL, SPH_MATCH_ALL);
-        $this->assertEquals(ESphinxMath::ANY, SPH_MATCH_ANY);
-        $this->assertEquals(ESphinxMath::PHRASE, SPH_MATCH_PHRASE);
-        $this->assertEquals(ESphinxMath::BOOLEAN, SPH_MATCH_BOOLEAN);
-        $this->assertEquals(ESphinxMath::EXTENDED, SPH_MATCH_EXTENDED);
-        $this->assertEquals(ESphinxMath::FULLSCAN, SPH_MATCH_FULLSCAN);
-        $this->assertEquals(ESphinxMath::EXTENDED2, SPH_MATCH_EXTENDED2);
+        $this->assertEquals(ESphinxMatch::ALL, SPH_MATCH_ALL);
+        $this->assertEquals(ESphinxMatch::ANY, SPH_MATCH_ANY);
+        $this->assertEquals(ESphinxMatch::PHRASE, SPH_MATCH_PHRASE);
+        $this->assertEquals(ESphinxMatch::BOOLEAN, SPH_MATCH_BOOLEAN);
+        $this->assertEquals(ESphinxMatch::EXTENDED, SPH_MATCH_EXTENDED);
+        $this->assertEquals(ESphinxMatch::FULLSCAN, SPH_MATCH_FULLSCAN);
+        $this->assertEquals(ESphinxMatch::EXTENDED2, SPH_MATCH_EXTENDED2);
     }
 
     public function testRank()

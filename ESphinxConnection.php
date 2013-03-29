@@ -380,7 +380,7 @@ class ESphinxConnection extends ESphinxBaseConnection
     protected function applyMatchMode($mode)
     {
         $mode = (int)$mode;
-        if (!ESphinxMath::isValid($mode)) {
+        if (!ESphinxMatch::isValid($mode)) {
             throw new ESphinxException("Match mode {$mode} is not defined");
         }
         $this->sphinxClient->SetMatchMode($mode);
