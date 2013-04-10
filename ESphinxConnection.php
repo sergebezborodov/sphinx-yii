@@ -318,6 +318,10 @@ class ESphinxConnection extends ESphinxBaseConnection
             }
         }
 
+        if ($criteria->groupDistinct) {
+            $this->sphinxClient->SetGroupDistinct($criteria->groupDistinct);
+        }
+
         // apply id range
         if($criteria->getIsIdRangeSetted()) {
             $this->sphinxClient->SetIDRange($criteria->getIdMin(), $criteria->getMaxId());
