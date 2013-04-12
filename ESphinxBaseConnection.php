@@ -10,7 +10,7 @@ abstract class ESphinxBaseConnection extends CComponent
      *
      * @param array $parameters list of params, where first item is host, second is port
      * @example array("localhost", 3386)
-     * @link http://www.sphinxsearch.com/docs/manual-0.9.9.html#api-func-setserver
+     * @link http://sphinxsearch.com/docs/current.html#api-func-setserver
      */
     abstract public function setServer(array $parameters = array());
 
@@ -18,14 +18,14 @@ abstract class ESphinxBaseConnection extends CComponent
      * Open Sphinx persistent connection.
      * @throws ESphinxException if client is already connected.
      * @throws ESphinxException if client has connection error.
-     * @link http://www.sphinxsearch.com/docs/manual-0.9.9.html#api-func-open
+     * @link http://sphinxsearch.com/docs/current.html#api-func-open
      */
     abstract public function openConnection();
 
     /**
      * Close Sphinx persistent connection.
      * @throws ESphinxException if client is not connected.
-     * @link http://www.sphinxsearch.com/docs/manual-0.9.9.html#api-func-close
+     * @link http://sphinxsearch.com/docs/current.html#api-func-close
      */
     abstract public function closeConnection();
 
@@ -45,7 +45,7 @@ abstract class ESphinxBaseConnection extends CComponent
      * in order for application-level error handling to advise the user.
      *
      * @param integer $timeout
-     * @link http://www.sphinxsearch.com/docs/manual-0.9.9.html#api-func-setconnecttimeout
+     * @link http://sphinxsearch.com/docs/current.html#api-func-setconnecttimeout
      */
     abstract function setConnectionTimeout($timeout);
 
@@ -56,7 +56,7 @@ abstract class ESphinxBaseConnection extends CComponent
      * Local search queries will be stopped once that much time has elapsed. Note that if you're performing a search
      * which queries several local indexes, this limit applies to each index separately.
      * @param integer $timeout
-     * @link
+     * @link http://sphinxsearch.com/docs/current.html#api-func-setmaxquerytime
      */
     abstract public function setQueryTimeout( $timeout );
 
@@ -84,6 +84,7 @@ abstract class ESphinxBaseConnection extends CComponent
      * @param string $words
      * @param array $opts
      * @return array
+     * @link http://sphinxsearch.com/docs/current.html#api-func-buildexcerpts
      */
     abstract public function createExcerts(array $docs, $index, $words, array $opts = array());
 
@@ -98,6 +99,7 @@ abstract class ESphinxBaseConnection extends CComponent
      * @param string $index
      * @param boolean $hits
      * @return array
+     * @link http://sphinxsearch.com/docs/current.html#api-func-buildkeywords
      */
     abstract public function createKeywords($query, $index, $hits = false);
 
@@ -108,6 +110,7 @@ abstract class ESphinxBaseConnection extends CComponent
      * guaranteed to escape all such characters at all times.
      * @param string $string
      * @return string
+     * @link http://sphinxsearch.com/docs/current.html#api-func-escapestring
      */
     abstract public function escape($string);
 

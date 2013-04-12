@@ -39,7 +39,7 @@ class ESphinxConnection extends ESphinxBaseConnection
      *
      * @param array $parameters list of params, where first item is host, second is port
      * @example array("localhost", 3386)
-     * @link http://www.sphinxsearch.com/docs/manual-0.9.9.html#api-func-setserver
+     * @link http://sphinxsearch.com/docs/current.html#api-func-setserver
      */
     public function setServer(array $parameters = array())
     {
@@ -56,7 +56,7 @@ class ESphinxConnection extends ESphinxBaseConnection
      *
      * @throws ESphinxException if client is already connected.
      * @throws ESphinxException if client has connection error.
-     * @link http://www.sphinxsearch.com/docs/manual-0.9.9.html#api-func-open
+     * @link http://sphinxsearch.com/docs/current.html#api-func-open
      */
     public function openConnection()
     {
@@ -87,7 +87,7 @@ class ESphinxConnection extends ESphinxBaseConnection
      * Close Sphinx persistent connection.
      *
      * @throws ESphinxException if client is not connected.
-     * @link http://www.sphinxsearch.com/docs/manual-0.9.9.html#api-func-close
+     * @link http://sphinxsearch.com/docs/current.html#api-func-close
      */
     public function closeConnection()
     {
@@ -119,7 +119,7 @@ class ESphinxConnection extends ESphinxBaseConnection
      * in order for application-level error handling to advise the user.
      *
      * @param integer $timeout
-     * @link http://www.sphinxsearch.com/docs/manual-0.9.9.html#api-func-setconnecttimeout
+     * @link http://sphinxsearch.com/docs/current.html#api-func-setconnecttimeout
      */
     public function setConnectionTimeout($timeout)
     {
@@ -134,7 +134,7 @@ class ESphinxConnection extends ESphinxBaseConnection
      * which queries several local indexes, this limit applies to each index separately.
      *
      * @param integer $timeout
-     * @link
+     * @link http://sphinxsearch.com/docs/current.html#api-func-setmaxquerytime
      */
     public function setQueryTimeout($timeout)
     {
@@ -167,6 +167,7 @@ class ESphinxConnection extends ESphinxBaseConnection
      * @param string $words
      * @param array $opts
      * @return array
+     * @link http://sphinxsearch.com/docs/current.html#api-func-buildexcerpts
      */
     public function createExcerts(array $docs, $index, $words, array $opts = array())
     {
@@ -185,6 +186,7 @@ class ESphinxConnection extends ESphinxBaseConnection
      * @param string $index
      * @param boolean $hits
      * @return array
+     * @link http://sphinxsearch.com/docs/current.html#api-func-buildkeywords
      */
     public function createKeywords($query, $index, $hits = false)
     {
@@ -199,6 +201,7 @@ class ESphinxConnection extends ESphinxBaseConnection
      *
      * @param string $string
      * @return string
+     * @link http://sphinxsearch.com/docs/current.html#api-func-escapestring
      */
     public function escape($string)
     {
