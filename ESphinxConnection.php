@@ -8,6 +8,9 @@
  */
 class ESphinxConnection extends ESphinxBaseConnection
 {
+    const DEFAULT_SERVER = 'localhost';
+    const DEFAULT_PORT   = 3314;
+
     /**
      * Instance of SphinxClient
      *
@@ -38,17 +41,27 @@ class ESphinxConnection extends ESphinxBaseConnection
      * Set Sphinx server connection parameters.
      *
      * @param array $parameters list of params, where first item is host, second is port
+     * @example 'localhost'
+     * @example 'localhost:3314'
      * @example array("localhost", 3386)
      * @link http://sphinxsearch.com/docs/current.html#api-func-setserver
      */
-    public function setServer(array $parameters = array())
+    public function setServer($parameters = null)
     {
-        if(!isset ($parameters[0]))
-            $parameters[0] = 'localhost';
-        if(!isset ($parameters[1]))
-            $parameters[1] = 3386;
+        $server = self::DEFAULT_SERVER;
+        $port   = self::DEFAULT_PORT;
+        if (is_string($parameters)) {
+            $parameters = explode(':', $parameters);
+        }
 
-        $this->sphinxClient->SetServer($parameters[0],$parameters[1]);
+        if (isset($parameters[0])) {
+            $server = $parameters[0];
+        }
+        if (isset($parameters[1])) {
+            $port = $parameters[1];
+        }
+
+        $this->sphinxClient->SetServer($server, $port);
     }
 
     /**

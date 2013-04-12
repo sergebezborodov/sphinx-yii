@@ -9,10 +9,12 @@ abstract class ESphinxBaseConnection extends CComponent
      * Set Sphinx server connection parameters.
      *
      * @param array $parameters list of params, where first item is host, second is port
+     * @example 'localhost'
+     * @example 'localhost:3314'
      * @example array("localhost", 3386)
      * @link http://sphinxsearch.com/docs/current.html#api-func-setserver
      */
-    abstract public function setServer(array $parameters = array());
+    abstract public function setServer($parameters = null);
 
     /**
      * Open Sphinx persistent connection.
