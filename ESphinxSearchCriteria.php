@@ -23,16 +23,6 @@ class ESphinxSearchCriteria extends CComponent
     private $_rangeFilters = array();
 
     /**
-     * @var string search query
-     */
-    public $query = '';
-
-    /**
-     * @var string target search index
-     */
-    public $from;
-
-    /**
      * @var int query sorting mode
      * @url http://sphinxsearch.com/docs/manual-2.0.2.html#sorting-modes
      */
