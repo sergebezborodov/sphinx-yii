@@ -91,7 +91,7 @@ A simpler way to search is to use the ESphinxDataProvider to automatically fetch
 
 Example searching Post model:
 ```php
-  $dataProvider=new SphinxDataProvider('Post', array(
+  $dataProvider=new ESphinxDataProvider('Post', array(
       'query'=>'@title learn php',
       'sphinxCriteria' => new ESphinxCriteria(array(
          'matchMode' => ESphinxMatch::EXTENDED,
