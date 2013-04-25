@@ -18,6 +18,7 @@ Configure
 ```php
 'components' => array(
     'sphinx' => array(
+        'class' => 'ext.sphinx.ESphinxConnection',
         'server' => array('localhost', 3386),
         'connectionTimeout' => 3, // optional, default 0 - no limit
         'queryTimeout'      => 5, // optional, default 0 - no limit
