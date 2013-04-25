@@ -84,3 +84,28 @@ $criteria->deleteFilter('site'); // delete filter on site_id field
 
 // querying....
 ```
+
+Using The DataProvider
+----------------------
+A simpler way to search is to use the ESphinxDataProvider to automatically fetch the models for your search results.
+
+Example searching Post model:
+```php
+  $dataProvider=new SphinxDataProvider('Post', array(
+      'query'=>'@title learn php',
+      'sphinxCriteria' => new ESphinxCriteria(array(
+         'matchMode' => ESphinxMatch::EXTENDED,
+       )),
+      'criteria'=>array(
+         'condition'=>'author.name = :author',
+         'params'=>array(':author'=>'Mark O\'Keeffe'),
+         'order'=>'create_time DESC',
+         'with'=>array('author'),
+      ),
+      'pagination'=>array(
+         'pageSize'=>20,
+      ),
+  ));
+```
+
+Then use the dataprovider as normal
