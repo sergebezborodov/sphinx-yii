@@ -8,9 +8,6 @@
  */
 class ESphinxConnection extends ESphinxBaseConnection
 {
-    const DEFAULT_SERVER = 'localhost';
-    const DEFAULT_PORT   = 3314;
-
     /**
      * Instance of SphinxClient
      *
