@@ -5,8 +5,15 @@
  */
 abstract class ESphinxBaseConnection extends CComponent
 {
-    const DEFAULT_SERVER = 'localhost';
+    const DEFAULT_SERVER = '127.0.0.1';
     const DEFAULT_PORT   = 3314;
+
+    /**
+     * Init internal state
+     */
+    public function init()
+    {}
+
 
     /**
      * Set Sphinx server connection parameters.

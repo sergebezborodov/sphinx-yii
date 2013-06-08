@@ -1,12 +1,12 @@
 <?php
 
 
-class ESphinxDbCommandBuilder extends CMysqlCommandBuilder
+class ESphinxQlCommandBuilder extends CMysqlCommandBuilder
 {
     /**
      * Creates a SELECT command for a single table.
      * @param mixed $table the table schema ({@link CDbTableSchema}) or the table name (string).
-     * @param ESphinxDbCriteria $criteria the query criteria
+     * @param ESphinxQlCriteria $criteria the query criteria
      * @param string $alias the alias name of the primary table. Defaults to 't'.
      * @return CDbCommand query command.
      */
@@ -25,12 +25,12 @@ class ESphinxDbCommandBuilder extends CMysqlCommandBuilder
             $prefix = $alias . '.';
             $select = array();
             foreach($table->getColumnNames() as $name) {
-                $select[] = $prefix.$this->_schema->quoteColumnName($name);
+                $select[] = $prefix.$this->getSchema()->quoteColumnName($name);
             }
             $select = implode(', ',$select);
         }
 
-        $sql = ($criteria->distinct ? 'SELECT DISTINCT':'SELECT')." {$select} FROM {$table->rawName} $alias";
+        $sql = ($criteria->distinct ? 'SELECT DISTINCT':'SELECT')." {$select} FROM {$table}";
         $sql = $this->applyJoin($sql, $criteria->join);
         $sql = $this->applyCondition($sql, $criteria->condition);
         $sql = $this->applyGroup($sql, $criteria->group);
@@ -61,5 +61,39 @@ class ESphinxDbCommandBuilder extends CMysqlCommandBuilder
             $sql .= ' WITHIN GROUP ORDER BY ' . $groupOrder;
         }
         return $sql;
+    }
+
+    protected function ensureTable(&$table)
+    {}
+
+    /**
+     * Binds parameter values for an SQL command.
+     * @param CDbCommand $command database command
+     * @param array $values values for binding (integer-indexed array for question mark placeholders, string-indexed array for named placeholders)
+     */
+    public function bindValues($command, $values)
+    {
+        if(($n=count($values))===0)
+            return;
+
+        // by default yii checks value type and if it is float, yii sends value to pdo as string
+        // mysql process this floats as string normal, but sphinx doesn't
+        if(isset($values[0])) // question mark placeholders
+        {
+            for($i=0;$i<$n;++$i) {
+                $type = is_float($values[$i]) ? PDO::PARAM_INT : null;
+                $command->bindValue($i+1,$values[$i], $type);
+            }
+        }
+        else // named placeholders
+        {
+            foreach($values as $name=>$value) {
+                if($name[0]!==':') {
+                    $name=':'.$name;
+                }
+                $type = is_float($value) ? PDO::PARAM_INT : null;
+                $command->bindValue($name, $value, $type);
+            }
+        }
     }
 }

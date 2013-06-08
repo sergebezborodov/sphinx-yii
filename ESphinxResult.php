@@ -248,7 +248,7 @@ class ESphinxMatchResult extends CComponent
 		$this->_match = $match;
 	    $this->_id = (int)$match['id'];
 	    $this->_weight = (int)$match['weight'];
-	    $this->_attributes = (array)$match['attrs'];
+	    $this->_attributes = isset($match['attrs']) ? (array)$match['attrs'] : $match;
 	}
 
     public function getId()

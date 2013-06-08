@@ -1,7 +1,7 @@
 <?php
 
 
-class ESphinxDbCriteria extends CDbCriteria
+class ESphinxQlCriteria extends CDbCriteria
 {
     /**
      * OPTION clause.

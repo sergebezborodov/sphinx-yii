@@ -29,12 +29,6 @@ class ESphinxConnection extends ESphinxBaseConnection
     }
 
     /**
-     * Init internal state
-     */
-    public function init()
-    {}
-
-    /**
      * Set Sphinx server connection parameters.
      *
      * @param array $parameters list of params, where first item is host, second is port

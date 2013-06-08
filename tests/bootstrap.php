@@ -27,6 +27,11 @@ require ROOT.'/ESphinxResult.php';
 
 require ROOT . '/ESphinxBaseConnection.php';
 require ROOT . '/ESphinxConnection.php';
+require ROOT . '/ESphinxMysqlConnection.php';
+
+require ROOT . '/ql/ESphinxQlDbConnection.php';
+require ROOT . '/ql/ESphinxQlCommandBuilder.php';
+require ROOT . '/ql/ESphinxQlCriteria.php';
 
 require 'TestApplication.php';
 Yii::import('system.test.*');
