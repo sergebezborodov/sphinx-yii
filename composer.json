@@ -7,6 +7,13 @@
         {"name": "Alex Sharov", "email": "www.pismeco@gmail.com"}
     ],
     "autoload": {
-        "classmap": [ "/", "/enums" ]
+        "classmap": [
+            "ESphinxBaseConnection.php",
+            "ESphinxConnection.php",
+            "ESphinxException.php",
+            "ESphinxQuery.php",
+            "ESphinxResult.php",
+            "ESphinxSearchCriteria.php",
+            "enums/" ]
     }
 }
