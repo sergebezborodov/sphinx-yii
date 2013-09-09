@@ -1,0 +1,28 @@
+{
+    "name": "sergebezborodov/sphinx-yii",
+    "description": "Sphinx Api extension for Yii",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Serge Bezborodov",
+            "email": "serge@bezborodov.net",
+            "role": "Author"
+        },
+        {
+            "name": "Alex Sharov",
+            "email": "www.pismeco@gmail.com",
+            "role": "Contributor"
+        }
+    ],
+    "autoload": {
+        "classmap": [
+            "ESphinxBaseConnection.php",
+            "ESphinxConnection.php",
+            "ESphinxException.php",
+            "ESphinxQuery.php",
+            "ESphinxResult.php",
+            "ESphinxSearchCriteria.php",
+            "enums/"
+        ]
+    }
+}
