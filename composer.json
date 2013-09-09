@@ -1,0 +1,12 @@
+{
+    "name": "sergebezborodov/sphinx-yii",
+    "description": "Sphinx Api extension for Yii",
+    "type": "library",
+    "authors": [
+        {"name": "Serge Bezborodov", "email": "serge@bezborodov.net"},
+        {"name": "Alex Sharov", "email": "www.pismeco@gmail.com"}
+    ],
+    "autoload": {
+        "classmap": [ "" ]
+    }
+}
