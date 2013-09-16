@@ -331,7 +331,7 @@ class ESphinxConnection extends ESphinxBaseConnection
 
         // apply id range
         if($criteria->getIsIdRangeSetted()) {
-            $this->sphinxClient->SetIDRange($criteria->getIdMin(), $criteria->getMaxId());
+            $this->sphinxClient->SetIDRange($criteria->getMinId(), $criteria->getMaxId());
         }
 
         // apply weights

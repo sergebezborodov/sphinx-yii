@@ -134,7 +134,7 @@ class DbSearchTest extends CDbTestCase
 
         $criteria = new ESphinxSearchCriteria;
         $criteria->sortMode = ESphinxSort::ATTR_DESC;
-        $criteria->setSortBy('user_id ASC');
+        $criteria->setSortBy('user_id');
 
         $query = new ESphinxQuery('', 'article', $criteria);
         $result = $sphinx->executeQuery($query);
@@ -186,7 +186,9 @@ class DbSearchTest extends CDbTestCase
     {
         $sphinx = $this->createConnection();
         $criteria = new ESphinxSearchCriteria;
-        $criteria->addGroupBy('user_id', ESphinxGroup::BY_ATTR);
+        $criteria->sortMode = ESphinxSort::ATTR_DESC;
+        $criteria->sortBy = 'user_id';
+        $criteria->addGroupBy('user_id', ESphinxGroup::BY_ATTR, '@weight DESC');
 
         $query = new ESphinxQuery('', 'article', $criteria);
         $result = $sphinx->executeQuery($query);

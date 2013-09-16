@@ -332,7 +332,7 @@ class ESphinxSearchCriteria extends CComponent
     public function setSortBy($value)
     {
         if ($this->sortMode == ESphinxSort::EXTENDED) {
-            throw new ESphinxException('Use getSortBy is not allowen with EXTENDED sort mode, use getOrders');
+            throw new ESphinxException('Use setSortBy is not allowen with EXTENDED sort mode, use getOrders');
         }
 
         $this->_sortBy = $value;
@@ -620,7 +620,7 @@ class ESphinxSearchCriteria extends CComponent
      * @param int $min
      * @param int $max
      * @see getIdMax
-     * @see getIdMin
+     * @see getMinId
      */
     public function setIdRange($min, $max)
     {
@@ -655,10 +655,10 @@ class ESphinxSearchCriteria extends CComponent
      * Get minimum id in range
      *
      * @return int
-     * @see getIdMin
+     * @see getMinId
      * @see setIdRange
      */
-    public function getIdMin()
+    public function getMinId()
     {
         return $this->_minId;
     }

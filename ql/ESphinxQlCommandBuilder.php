@@ -34,9 +34,9 @@ class ESphinxQlCommandBuilder extends CMysqlCommandBuilder
         $sql = $this->applyJoin($sql, $criteria->join);
         $sql = $this->applyCondition($sql, $criteria->condition);
         $sql = $this->applyGroup($sql, $criteria->group);
+        $sql = $this->applyWithinGroupOrder($sql, $criteria->withinGroupOrder);
         $sql = $this->applyHaving($sql, $criteria->having);
         $sql = $this->applyOrder($sql, $criteria->order);
-        $sql = $this->applyWithinGroupOrder($sql, $criteria->withinGroupOrder);
         $sql = $this->applyLimit($sql, $criteria->limit, $criteria->offset);
 
         $sql = $this->applyOption($sql, $criteria->option);
