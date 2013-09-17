@@ -6,7 +6,7 @@
  * @property int $connectionTimeout
  * @property int $queryTimeout
  */
-class ESphinxConnection extends ESphinxBaseConnection
+class ESphinxApiConnection extends ESphinxBaseConnection
 {
     /**
      * Instance of SphinxClient

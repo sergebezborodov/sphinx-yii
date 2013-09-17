@@ -15,11 +15,11 @@ class SearchTest extends CDbTestCase
 
 
     /**
-     * @return ESphinxConnection
+     * @return ESphinxApiConnection
      */
     protected function createConnection()
     {
-        $sphinx = new ESphinxConnection;
+        $sphinx = new ESphinxApiConnection;
         $sphinx->setServer(array('localhost', 9877));
         $sphinx->init();
 
@@ -29,7 +29,7 @@ class SearchTest extends CDbTestCase
     public function testCreate()
     {
         $sphinx = $this->createConnection();
-        $this->assertInstanceOf('ESphinxConnection', $sphinx);
+        $this->assertInstanceOf('ESphinxApiConnection', $sphinx);
         $this->assertFalse($sphinx->getIsConnected());
     }
 

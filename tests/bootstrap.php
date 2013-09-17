@@ -27,7 +27,7 @@ require ROOT.'/ESphinxQuery.php';
 require ROOT.'/ESphinxResult.php';
 
 require ROOT . '/ESphinxBaseConnection.php';
-require ROOT . '/ESphinxConnection.php';
+require ROOT . '/ESphinxApiConnection.php';
 require ROOT . '/ESphinxMysqlConnection.php';
 
 require ROOT . '/ql/ESphinxQlDbConnection.php';
