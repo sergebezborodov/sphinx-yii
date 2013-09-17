@@ -204,11 +204,11 @@ class ESphinxMysqlConnection extends ESphinxBaseConnection
      */
     public function createKeywords($query, $index, $hits = false)
     {
-        $command = $this->db->createCommand('CALL KEYWORDS(:query, :index)');
-        // @todo check for hits
+        $command = $this->db->createCommand('CALL KEYWORDS(:query, :index, :hits)');
         $command->params = array(
             ':query' => $query,
             ':index' => $index,
+            ':hits'  => $hits,
         );
         return $command->queryAll();
     }
@@ -311,16 +311,7 @@ class ESphinxMysqlConnection extends ESphinxBaseConnection
             $criteria->params[':match'] = $query->getText();
         }
 
-        if ($queryCriteria->getMaxId())
-        {
-            $criteria->addCondition('id <= :maxid');
-            $criteria->params[':maxid'] = $queryCriteria->getMaxId();
-        }
-        if ($queryCriteria->getMinId())
-        {
-            $criteria->addCondition('id >= :minid');
-            $criteria->params[':minid'] = $queryCriteria->getMinId();
-        }
+        $this->applyIdLimits($criteria, $queryCriteria);
 
 
         $this->applyFilters($queryCriteria->getFilters(), $criteria);
@@ -336,6 +327,18 @@ class ESphinxMysqlConnection extends ESphinxBaseConnection
         $criteria->offset = $queryCriteria->offset;
 
         return $criteria;
+    }
+
+    private function applyIdLimits(ESphinxQlCriteria $criteria, ESphinxSearchCriteria $queryCriteria)
+    {
+        if ($maxId = $queryCriteria->getMaxId()) {
+            $criteria->addCondition('id <= :maxid');
+            $criteria->params[':maxid'] = $maxId;
+        }
+        if ($minId = $queryCriteria->getMinId()) {
+            $criteria->addCondition('id >= :minid');
+            $criteria->params[':minid'] = $minId;
+        }
     }
 
     private function applyGroup(ESphinxQlCriteria $criteria, ESphinxSearchCriteria $queryCriteria)
