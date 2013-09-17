@@ -10,25 +10,39 @@ class ESphinxQlCommandBuilder extends CMysqlCommandBuilder
      * @param string $alias the alias name of the primary table. Defaults to 't'.
      * @return CDbCommand query command.
      */
-    public function createFindCommand($table,$criteria,$alias='t')
+    public function createFindCommand($table, $criteria, $alias='t')
     {
-        $this->ensureTable($table);
-        $select = is_array($criteria->select) ? implode(', ', $criteria->select) : $criteria->select;
-        if ($criteria->alias != '') {
-            $alias = $criteria->alias;
-        }
-        $alias = $this->getSchema()->quoteTableName($alias);
+        $sql = $this->createFindSql($table, $criteria);
+        $sql .= '; SHOW META;';
 
-        // issue 1432: need to expand * when SQL has JOIN
-        if ($select === '*' && !empty($criteria->join))
-        {
-            $prefix = $alias . '.';
-            $select = array();
-            foreach($table->getColumnNames() as $name) {
-                $select[] = $prefix.$this->getSchema()->quoteColumnName($name);
-            }
-            $select = implode(', ',$select);
+        $command = $this->getDbConnection()->createCommand($sql);
+        $this->bindValues($command, $criteria->params);
+
+        return $command;
+    }
+
+    public function createMultiFindCommand(array $tables, array $criterias)
+    {
+        $sql = '';
+        $params = array();
+        $table = reset($tables);
+        foreach ($criterias as $criteria) {
+            $sql .= $this->createFindSql($table, $criteria);
+            $sql .= '; SHOW META;';
+            $params = array_merge($params, $criteria->params);
+
+            list(,$table) = each($tables);
         }
+        $command = $this->getDbConnection()->createCommand($sql);
+        $this->bindValues($command, $params);
+
+        return $command;
+    }
+
+
+    private function createFindSql($table, ESphinxQlCriteria $criteria)
+    {
+        $select = is_array($criteria->select) ? implode(', ', $criteria->select) : $criteria->select;
 
         $sql = ($criteria->distinct ? 'SELECT DISTINCT':'SELECT')." {$select} FROM {$table}";
         $sql = $this->applyJoin($sql, $criteria->join);
@@ -41,9 +55,7 @@ class ESphinxQlCommandBuilder extends CMysqlCommandBuilder
 
         $sql = $this->applyOption($sql, $criteria->option);
 
-        $command=$this->getDbConnection()->createCommand($sql);
-        $this->bindValues($command, $criteria->params);
-        return $command;
+        return $sql;
     }
 
 

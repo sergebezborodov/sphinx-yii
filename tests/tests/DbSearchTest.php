@@ -211,4 +211,15 @@ class DbSearchTest extends CDbTestCase
         $this->assertEquals(2, count($result));
     }
 
+    public function testMultiQuery()
+    {
+        $sphinx = $this->createConnection();
+
+        $query1 = new ESphinxQuery('first', 'article', array('limit' => 1));
+        $query2 = new ESphinxQuery('second', 'article', array('limit' => 1));
+
+
+        $command = $sphinx->executeQueries(array($query1, $query2));
+
+    }
 }

@@ -271,14 +271,44 @@ class ESphinxMysqlConnection extends ESphinxBaseConnection
      */
     public function executeQueries(array $queries)
     {
-        // TODO: Implement executeQueries() method.
+        /** @var ESphinxQlCommandBuilder $cb */
+        $cb = $this->db->getCommandBuilder();
+
+        $tables = array();
+        $criterias = array();
+        foreach ($queries as $query) {
+            $tables[] = $query->getIndexes();
+            $criterias[] = $this->createDbCriteria($query);
+        }
+        $command = $cb->createMultiFindCommand($tables, $criterias);
+//dd($command);
+
+        $reader = $command->query();
+        $result = array();
+        foreach ($queries as $query) {
+            $matches = $reader->readAll();
+            $reader->nextResult();
+            $metaInfo = $reader->readAll();
+            $reader->nextResult();
+
+            $result[] = array(
+                'matches' => $matches,
+                'meta' => $metaInfo,
+            );
+        }
+
+        //dd($result);
     }
 
 
     private function createMeta(CDbCommand $command)
     {
-        $matches = $command->queryAll();
-        $metaInfo = $this->db->createCommand("SHOW META")->queryAll();
+        $reader = $command->query();
+
+        $matches = $reader->readAll();
+        $reader->nextResult();
+        $metaInfo = $reader->readAll();
+
         $meta = array();
         foreach($metaInfo as $item)
         {
@@ -301,18 +331,16 @@ class ESphinxMysqlConnection extends ESphinxBaseConnection
         // create select
         $criteria->select = $query->getCriteria()->select;
 
-
         // process conditions
         $queryCriteria = $query->getCriteria();
 
         if (strlen($query->getText()))
         {
-            $criteria->addCondition('MATCH(:match)');
-            $criteria->params[':match'] = $query->getText();
+            $criteria->addCondition('MATCH('.ESphinxQlCriteria::PARAM_PREFIX.ESphinxQlCriteria::$paramCount.')');
+            $criteria->params[ESphinxQlCriteria::PARAM_PREFIX.ESphinxQlCriteria::$paramCount++] = $query->getText();
         }
 
         $this->applyIdLimits($criteria, $queryCriteria);
-
 
         $this->applyFilters($queryCriteria->getFilters(), $criteria);
         $this->applyRanges($queryCriteria->getRangeFilters(), $criteria);
@@ -332,12 +360,12 @@ class ESphinxMysqlConnection extends ESphinxBaseConnection
     private function applyIdLimits(ESphinxQlCriteria $criteria, ESphinxSearchCriteria $queryCriteria)
     {
         if ($maxId = $queryCriteria->getMaxId()) {
-            $criteria->addCondition('id <= :maxid');
-            $criteria->params[':maxid'] = $maxId;
+            $criteria->addCondition('id <= '.ESphinxQlCriteria::PARAM_PREFIX.ESphinxQlCriteria::$paramCount);
+            $criteria->params[ESphinxQlCriteria::PARAM_PREFIX.ESphinxQlCriteria::$paramCount++] = $maxId;
         }
         if ($minId = $queryCriteria->getMinId()) {
-            $criteria->addCondition('id >= :minid');
-            $criteria->params[':minid'] = $minId;
+            $criteria->addCondition('id >= '.ESphinxQlCriteria::PARAM_PREFIX.ESphinxQlCriteria::$paramCount);
+            $criteria->params[ESphinxQlCriteria::PARAM_PREFIX.ESphinxQlCriteria::$paramCount++] = $minId;
         }
     }
 
@@ -463,13 +491,11 @@ class ESphinxMysqlConnection extends ESphinxBaseConnection
     protected function applyRanges(array $ranges, ESphinxQlCriteria $criteria)
     {
         foreach ($ranges as $rangeFilter) {
-            if (!$rangeFilter['exclude']) {
-                $criteria->addBetweenCondition($rangeFilter['attribute'], $rangeFilter['min'], $rangeFilter['max']);
-            } else {
-                $criteria->addCondition("{$rangeFilter['attribute']} NOT BETWEEN ? AND ?");
-                $criteria->params[] = $rangeFilter['min'];
-                $criteria->params[] = $rangeFilter['max'];
+            $attr = $rangeFilter['attribute'];
+            if ($rangeFilter['exclude']) {
+                $attr .= ' NOT';
             }
+            $criteria->addBetweenCondition($attr, $rangeFilter['min'], $rangeFilter['max']);
         }
     }
 
