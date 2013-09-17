@@ -20,6 +20,11 @@ class ESphinxMysqlConnection extends ESphinxBaseConnection
     private $connectionTimeout;
     private $queryTimeout;
 
+    /**
+     * @var ESphinxQuery[]
+     */
+    private $queries = array();
+
 
     public function init()
     {
@@ -249,9 +254,39 @@ class ESphinxMysqlConnection extends ESphinxBaseConnection
             $query->getIndexes(),
             $this->createDbCriteria($query)
         );
-        $meta = $this->createMeta($command);
-        return new ESphinxResult($meta);
+        $reader = $command->query();
+
+        $matches = $reader->readAll();
+        $reader->nextResult();
+        $metaInfo = $reader->readAll();
+
+        return $this->createResult($matches, $metaInfo);
     }
+
+    /**
+     * Adds query to internal storage
+     *
+     * @param ESphinxQuery $query
+     */
+    public function addQuery(ESphinxQuery $query)
+    {
+        $this->queries[] = clone $query;
+    }
+
+    /**
+     * @retun ESphinxResult[]
+     */
+    public function runQueries()
+    {
+        if (empty($this->queries)) {
+            throw new ESphinxException('There are no added queries, use addQuery method');
+        }
+
+        $result = $this->executeQueries($this->queries);
+        $this->queries = array();
+        return $result;
+    }
+
 
     /**
      * Execute query collection
@@ -274,49 +309,43 @@ class ESphinxMysqlConnection extends ESphinxBaseConnection
         /** @var ESphinxQlCommandBuilder $cb */
         $cb = $this->db->getCommandBuilder();
 
+        // prepearing
         $tables = array();
         $criterias = array();
         foreach ($queries as $query) {
             $tables[] = $query->getIndexes();
             $criterias[] = $this->createDbCriteria($query);
         }
-        $command = $cb->createMultiFindCommand($tables, $criterias);
-//dd($command);
 
+        // querying all queries
+        $command = $cb->createMultiFindCommand($tables, $criterias);
         $reader = $command->query();
+
+        // processing result
         $result = array();
-        foreach ($queries as $query) {
+        foreach ($queries as $_query) {
             $matches = $reader->readAll();
             $reader->nextResult();
             $metaInfo = $reader->readAll();
             $reader->nextResult();
 
-            $result[] = array(
-                'matches' => $matches,
-                'meta' => $metaInfo,
-            );
+            $result[] = $this->createResult($matches, $metaInfo);
         }
 
-        //dd($result);
+        return $result;
     }
 
-
-    private function createMeta(CDbCommand $command)
+    private function createResult($matches, $metaInfo)
     {
-        $reader = $command->query();
-
-        $matches = $reader->readAll();
-        $reader->nextResult();
-        $metaInfo = $reader->readAll();
-
         $meta = array();
-        foreach($metaInfo as $item)
-        {
+        foreach($metaInfo as $item) {
             list($name, $value) = array_values($item);
+            // todo: parse arrays identifier
             $meta[$name] = $value;
         }
         $meta['matches'] = $matches;
-        return $meta;
+
+        return new ESphinxResult($meta);
     }
 
 

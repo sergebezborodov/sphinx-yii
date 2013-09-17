@@ -219,7 +219,39 @@ class DbSearchTest extends CDbTestCase
         $query2 = new ESphinxQuery('second', 'article', array('limit' => 1));
 
 
-        $command = $sphinx->executeQueries(array($query1, $query2));
+        $result = $sphinx->executeQueries(array($query1, $query2));
+        $this->assertCount(2, $result);
 
+        $first  = $result[0][0];
+        $second = $result[1][0];
+
+        $this->assertEquals(1, $first->id);
+        $this->assertEquals(2, $second->id);
+    }
+
+
+    public function testAddQuery()
+    {
+        $sphinx = $this->createConnection();
+
+        try {
+            $sphinx->runQueries();
+            $this->setExpectedException('ESphinxException');
+        } catch (Exception $e) {
+            $this->assertInstanceOf('ESphinxException', $e);
+        }
+
+        $sphinx->addQuery(new ESphinxQuery('first', 'article', array('limit' => 1)));
+        $sphinx->addQuery(new ESphinxQuery('second', 'article', array('limit' => 1)));
+
+        $result = $sphinx->runQueries();
+
+        $this->assertCount(2, $result);
+
+        $first  = $result[0][0];
+        $second = $result[1][0];
+
+        $this->assertEquals(1, $first->id);
+        $this->assertEquals(2, $second->id);
     }
 }
