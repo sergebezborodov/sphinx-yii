@@ -13,7 +13,8 @@ define('ROOT', realpath(dirname(__FILE__).DS.'..'));
 
 require ROOT.'/../../framework/yii.php';
 
-require ROOT.'/sphinxapi.php';
+// TODO: change it to sphinxapi-2.1.1.php if you are using beta version
+require ROOT.'/sphinxapi-2.0.9.php';
 
 require ROOT.'/enums/ESphinxGroup.php';
 require ROOT.'/enums/ESphinxMatch.php';

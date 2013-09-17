@@ -341,7 +341,9 @@ class ESphinxConnection extends ESphinxBaseConnection
         $this->applyFilters($criteria->getFilters());
         $this->applyRanges($criteria->getRangeFilters());
 
-        $this->applyOptions($criteria);
+        if (VER_COMMAND_SEARCH >= 0x11D) {
+            $this->applyOptions($criteria);
+        }
     }
 
 
@@ -450,6 +452,9 @@ class ESphinxConnection extends ESphinxBaseConnection
         $this->sphinxClient->SetRankingMode(SPH_RANK_NONE);
         $this->sphinxClient->SetSortMode(SPH_SORT_RELEVANCE, "");
         $this->sphinxClient->SetSelect("*");
+        if (VER_COMMAND_SEARCH >= 0x11D) {
+            $this->sphinxClient->ResetQueryFlag();
+        }
     }
 
     protected function execute()
