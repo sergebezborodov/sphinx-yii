@@ -279,7 +279,7 @@ class ESphinxConnection extends ESphinxBaseConnection
     protected function applyQuery(ESphinxQuery $query)
     {
         $this->applyCriteria($query->getCriteria());
-        $this->sphinxClient->AddQuery($query->getText(), $query->getIndexes());
+        $this->sphinxClient->AddQuery($query->getText(), $query->getIndexes(), $query->criteria->comment);
     }
 
     protected function applyCriteria(ESphinxSearchCriteria $criteria)
@@ -340,6 +340,32 @@ class ESphinxConnection extends ESphinxBaseConnection
 
         $this->applyFilters($criteria->getFilters());
         $this->applyRanges($criteria->getRangeFilters());
+
+        $this->applyOptions($criteria);
+    }
+
+
+    private function applyOptions(ESphinxSearchCriteria $queryCriteria)
+    {
+        if ($queryCriteria->booleanSimplify !== null) {
+            $this->sphinxClient->SetQueryFlag('boolean_simplify', $queryCriteria->booleanSimplify);
+        }
+
+        if (($revScan = $queryCriteria->getReverseScan()) !== null) {
+            $this->sphinxClient->SetQueryFlag('reverse_scan', $revScan ?  1 : 0);
+        }
+
+        if (($sortMode = $queryCriteria->getSortMethod()) !== null) {
+            $this->sphinxClient->SetQueryFlag('sort_method', $sortMode);
+        }
+
+        if ($queryCriteria->globalIdf !== null) {
+            $this->sphinxClient->SetQueryFlag('global_idf', $queryCriteria->globalIdf);
+        }
+
+        if (($idf = $queryCriteria->getIdf()) !== null) {
+            $this->sphinxClient->SetQueryFlag('idf', $idf);
+        }
     }
 
     protected function applyRanges(array $ranges)
