@@ -84,12 +84,53 @@ class ESphinxSearchCriteria extends CComponent
     /**
      * @var int max query result size
      */
-    public $maxMatches = 0;
+    public $maxMatches;
 
     /**
      * @var int
      */
-    public $cutOff = 0;
+    public $cutOff;
+
+    /**
+     * User defined comment for query, copied verbatim to query log
+     *
+     * @var string
+     */
+    public $comment;
+
+    /**
+     * Since version 2.1.1-beta, queries may be automatically optimized if this flag is true
+     *
+     * @var bool
+     */
+    public $booleanSimplify;
+
+    /**
+     * @var int
+     */
+    private $_reverseScan;
+
+    /**
+     * @var string
+     */
+    private $_sortMethod;
+
+    /**
+     * Use global statistics (frequencies) from the global_idf file for IDF computations,
+     * rather than the local index statistics
+     *
+     * @var string
+     */
+    public $globalIdf;
+
+    /**
+     * The standard IDF (Inverse Document Frequency) calculation may cause undesired keyword
+     * penalization effects in the BM25 weighting functions.
+     *
+     * @var string
+     */
+    private $_idf;
+
 
     /**
      * Init with values
@@ -681,5 +722,70 @@ class ESphinxSearchCriteria extends CComponent
     public function getIsIdRangeSetted()
     {
         return is_int($this->_minId) && is_int($this->_maxId);
+    }
+
+    /**
+     * @return int
+     */
+    public function getReverseScan()
+    {
+        return $this->_reverseScan;
+    }
+
+    /**
+     * Lets you control the order in which full-scan query processes the rows
+     *
+     * @param bool $reverseScan
+     */
+    public function setReverseScan($reverseScan)
+    {
+        $this->_reverseScan = (bool)$reverseScan;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSortMethod()
+    {
+        return $this->_sortMethod;
+    }
+
+    /**
+     * 'pq' (priority queue, set by default) or 'kbuffer'
+     * (gives faster sorting for already pre-sorted data, e.g. index data sorted by id).
+     *
+     * @param string $sortMethod
+     */
+    public function setSortMethod($sortMethod)
+    {
+        if ($sortMethod != 'pq' && $sortMethod != 'kbuffer') {
+            throw new ESphinxException('Invalid value for sortMethod');
+        }
+
+        $this->_sortMethod = $sortMethod;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIdf()
+    {
+        return $this->_idf;
+    }
+
+    /**
+     * The standard IDF (Inverse Document Frequency) calculation may cause undesired keyword
+     * penalization effects in the BM25 weighting functions.
+     * Either 'normalized' (default) or 'plain'
+     *
+     * @param string $idf
+     */
+    public function setIdf($idf)
+    {
+        if ($idf != 'normalized' && $idf != 'plain') {
+            throw new ESphinxException('Invalid value for idf flag');
+        }
+
+        $this->_idf = $idf;
     }
 }

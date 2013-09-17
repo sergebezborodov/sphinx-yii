@@ -329,6 +329,8 @@ class ESphinxMysqlConnection extends ESphinxBaseConnection
         $this->applyGroup($criteria, $queryCriteria);
         $this->applyOrder($criteria, $queryCriteria);
 
+        $this->applyOptions($criteria, $queryCriteria);
+
         // limit
         $criteria->limit = $queryCriteria->limit;
         $criteria->offset = $queryCriteria->offset;
@@ -372,17 +374,8 @@ class ESphinxMysqlConnection extends ESphinxBaseConnection
     private function applyOrder(ESphinxQlCriteria $criteria, ESphinxSearchCriteria $queryCriteria)
     {
         if ($queryCriteria->sortMode == ESphinxSort::EXTENDED) {
-            $orders = '';
             if ($orderArray = $queryCriteria->getOrders()) {
-                $fields = array();
-                foreach ($orderArray as $attr => $type) {
-                    $fields[] = $attr . ' ' . $type;
-                }
-                $orders = implode(', ', $fields);
-            }
-
-            if ($orders) {
-                $criteria->order = $orders;
+                $criteria->order = $this->implodeKV($orderArray);
             }
         } else {
             if ($queryCriteria->getSortBy()) {
@@ -402,7 +395,54 @@ class ESphinxMysqlConnection extends ESphinxBaseConnection
                 }
             }
         }
+    }
 
+
+    private function applyOptions(ESphinxQlCriteria $criteria, ESphinxSearchCriteria $queryCriteria)
+    {
+        $options = array();
+
+        if ($queryCriteria->maxMatches !== null) {
+            $options['max_matches'] = $queryCriteria->maxMatches;
+        }
+
+        if ($queryCriteria->cutOff !== null) {
+            $options['cutoff']      = $queryCriteria->cutOff;
+        }
+
+        if ($idxWeights = $queryCriteria->getIndexWeights()) {
+            $options['index_weights'] = '('.$this->implodeKV($idxWeights, '=').')';
+        }
+
+        if ($fieldsWeights = $queryCriteria->getFieldWeights()) {
+            $options['field_weights'] = '('.$this->implodeKV($fieldsWeights, '=').')';
+        }
+
+        if ($queryCriteria->comment) {
+            $options['comment'] = $queryCriteria->comment;
+        }
+
+        if ($queryCriteria->booleanSimplify !== null) {
+            $options['boolean_simplify'] = $queryCriteria->booleanSimplify;
+        }
+
+        if (($revScan = $queryCriteria->getReverseScan()) !== null) {
+            $options['reverse_scan'] = $revScan ?  1 : 0;
+        }
+
+        if (($sortMode = $queryCriteria->getSortMethod()) !== null) {
+            $options['sort_method'] = $sortMode;
+        }
+
+        if ($queryCriteria->globalIdf !== null) {
+            $options['global_idf'] = $queryCriteria->globalIdf;
+        }
+
+        if (($idf = $queryCriteria->getIdf()) !== null) {
+            $options['idf'] = $idf;
+        }
+
+        $criteria->option = $this->implodeKV($options, '=');
     }
 
 
@@ -428,5 +468,16 @@ class ESphinxMysqlConnection extends ESphinxBaseConnection
                 $criteria->params[] = $rangeFilter['max'];
             }
         }
+    }
+
+
+    private function implodeKV($array, $separator = ' ')
+    {
+        $fields = array();
+        foreach ($array as $k => $v) {
+            $fields[] = $k . $separator . $v;
+        }
+
+        return implode(', ', $fields);
     }
 }
