@@ -20,10 +20,6 @@ class ESphinxMysqlConnection extends ESphinxBaseConnection
     private $connectionTimeout;
     private $queryTimeout;
 
-    /**
-     * @var ESphinxQuery[]
-     */
-    private $queries = array();
 
 
     public function init()
@@ -261,30 +257,6 @@ class ESphinxMysqlConnection extends ESphinxBaseConnection
         $metaInfo = $reader->readAll();
 
         return $this->createResult($matches, $metaInfo);
-    }
-
-    /**
-     * Adds query to internal storage
-     *
-     * @param ESphinxQuery $query
-     */
-    public function addQuery(ESphinxQuery $query)
-    {
-        $this->queries[] = clone $query;
-    }
-
-    /**
-     * @retun ESphinxResult[]
-     */
-    public function runQueries()
-    {
-        if (empty($this->queries)) {
-            throw new ESphinxException('There are no added queries, use addQuery method');
-        }
-
-        $result = $this->executeQueries($this->queries);
-        $this->queries = array();
-        return $result;
     }
 
 

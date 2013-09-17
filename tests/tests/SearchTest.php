@@ -95,6 +95,8 @@ class SearchTest extends CDbTestCase
         $this->assertEquals($result2[2]->id, 5);
     }
 
+
+
     public function testFilters()
     {
         $sphinx = $this->createConnection();
@@ -203,5 +205,48 @@ class SearchTest extends CDbTestCase
         $result = $sphinx->executeQuery($query);
 
         $this->assertEquals(2, count($result));
+    }
+
+    public function testMultiQuery()
+    {
+        $sphinx = $this->createConnection();
+
+        $query1 = new ESphinxQuery('first', 'article', array('limit' => 1));
+        $query2 = new ESphinxQuery('second', 'article', array('limit' => 1));
+
+
+        $result = $sphinx->executeQueries(array($query1, $query2));
+        $this->assertCount(2, $result);
+
+        $first  = $result[0][0];
+        $second = $result[1][0];
+
+        $this->assertEquals(1, $first->id);
+        $this->assertEquals(2, $second->id);
+    }
+
+    public function testAddQuery()
+    {
+        $sphinx = $this->createConnection();
+
+        try {
+            $sphinx->runQueries();
+            $this->setExpectedException('ESphinxException');
+        } catch (Exception $e) {
+            $this->assertInstanceOf('ESphinxException', $e);
+        }
+
+        $sphinx->addQuery(new ESphinxQuery('first', 'article', array('limit' => 1)));
+        $sphinx->addQuery(new ESphinxQuery('second', 'article', array('limit' => 1)));
+
+        $result = $sphinx->runQueries();
+
+        $this->assertCount(2, $result);
+
+        $first  = $result[0][0];
+        $second = $result[1][0];
+
+        $this->assertEquals(1, $first->id);
+        $this->assertEquals(2, $second->id);
     }
 }
