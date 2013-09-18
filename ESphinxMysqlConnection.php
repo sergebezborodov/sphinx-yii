@@ -399,6 +399,10 @@ class ESphinxMysqlConnection extends ESphinxBaseConnection
                 throw new ESphinxException('Unknow group function');
         }
 
+        if ($queryCriteria->groupDistinct) {
+            $criteria->select .= ', COUNT(DISTINCT '.$queryCriteria->groupDistinct.') AS @distinct';
+        }
+
         $criteria->order = $queryCriteria->groupBySort;
     }
 
