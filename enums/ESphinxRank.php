@@ -90,6 +90,7 @@ class ESphinxRank
             self::BM25,
             self::NONE,
             self::WORDCOUNT,
+            self::PROXIMITY,
             self::MATCHANY,
             self::FIELDMASK,
             self::SPH04,

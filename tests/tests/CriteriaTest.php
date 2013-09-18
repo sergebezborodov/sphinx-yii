@@ -361,4 +361,14 @@ class CriteriaTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($criteria->offset, 10);
     }
 
+
+    public function testQueryTimeOut()
+    {
+        $criteria = new ESphinxSearchCriteria;
+        $this->assertNull($criteria->queryTimeout);
+
+        $criteria->queryTimeout = 10;
+        $this->assertEquals(10, $criteria->queryTimeout);
+    }
+
 }
