@@ -149,6 +149,15 @@ class ESphinxSearchCriteria extends CComponent
 
 
     /**
+     * Query timeout in ms
+     * If not specified will use connection parametrs
+     *
+     * @var int|null
+     */
+    public $queryTimeout;
+
+
+    /**
      * Init with values
      *
      * @param array $values

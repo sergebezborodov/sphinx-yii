@@ -22,6 +22,8 @@ class ESphinxApiConnection extends ESphinxBaseConnection
      */
     private $isConnected = false;
 
+    private $_queryTimeout = 0;
+
     public function __construct()
     {
         $this->sphinxClient = new SphinxClient();
@@ -142,7 +144,7 @@ class ESphinxApiConnection extends ESphinxBaseConnection
      */
     public function setQueryTimeout($timeout)
     {
-        $this->sphinxClient->SetMaxQueryTime((int)$timeout);
+        $this->queryTimeout = $timeout;
     }
 
 
@@ -338,6 +340,8 @@ class ESphinxApiConnection extends ESphinxBaseConnection
 
         $this->applyFilters($criteria->getFilters());
         $this->applyRanges($criteria->getRangeFilters());
+
+        $this->sphinxClient->SetMaxQueryTime($criteria->queryTimeout !== null ? $criteria->queryTimeout : $this->_queryTimeout);
 
         if (VER_COMMAND_SEARCH >= 0x11D) {
             $this->applyOptions($criteria);

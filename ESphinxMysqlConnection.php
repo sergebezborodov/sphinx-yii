@@ -18,7 +18,7 @@ class ESphinxMysqlConnection extends ESphinxBaseConnection
      */
     private $db;
     private $connectionTimeout;
-    private $queryTimeout;
+    private $queryTimeout = 0;
 
 
 
@@ -250,9 +250,6 @@ class ESphinxMysqlConnection extends ESphinxBaseConnection
             $query->getIndexes(),
             $this->createDbCriteria($query)
         );
-        if (defined('aa')) {
-            dd($command);
-        }
         $reader = $command->query();
 
         $matches = $reader->readAll();
@@ -483,6 +480,8 @@ class ESphinxMysqlConnection extends ESphinxBaseConnection
         if (($idf = $queryCriteria->getIdf()) !== null) {
             $options['idf'] = $idf;
         }
+
+        $options['max_query_time'] = $queryCriteria->queryTimeout !== null ? $queryCriteria->queryTimeout : $this->queryTimeout;
 
         $criteria->option = $this->implodeKV($options, '=');
     }
