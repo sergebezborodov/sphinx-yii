@@ -319,10 +319,8 @@ class ESphinxApiConnection extends ESphinxBaseConnection
         }
 
         // apply group
-        if ($groupArray = $criteria->getGroupBys()) {
-            foreach ($groupArray as $group) {
-                $this->sphinxClient->SetGroupBy($group['attribute'], $group['value'], $group['groupSort']);
-            }
+        if ($criteria->groupBy) {
+            $this->sphinxClient->SetGroupBy($criteria->groupBy, $criteria->groupByFunc, $criteria->groupBySort);
         }
 
         if ($criteria->groupDistinct) {

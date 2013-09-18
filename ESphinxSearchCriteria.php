@@ -59,9 +59,25 @@ class ESphinxSearchCriteria extends CComponent
     private $_indexWeights = array();
 
     /**
-     * @var array group fields
+     * Group by field
+     *
+     * @var string|null
      */
-    private $_groupBy = array();
+    public $groupBy = null;
+
+    /**
+     * Group by function, default by attr
+     *
+     * @var int
+     */
+    public $groupByFunc = ESphinxGroup::BY_ATTR;
+
+    /**
+     * Groups sorting, refers to ORDER BY in sql mode
+     *
+     * @var string
+     */
+    public $groupBySort = '@groupby desc';
 
     /**
      * @var string field for distinct group
@@ -577,72 +593,6 @@ class ESphinxSearchCriteria extends CComponent
     public function getIndexWeights()
     {
         return $this->_indexWeights;
-    }
-
-
-
-    /**
-     * Add group by field
-     *
-     * @param string $attribute
-     * @param string $func
-     * @param string|null $groupSort
-     */
-    public function addGroupBy($attribute, $func, $groupSort = '@group desc')
-    {
-        $this->_groupBy[] = array(
-            'attribute' => $attribute,
-            'value'     => $func,
-            'groupSort' => $groupSort,
-        );
-    }
-
-    /**
-     * Add groups by fields
-     *      //     attr           func            group sort
-     *      array('attribute', SPH_GROUPBY_ATTR, '@group desc'),
-     *      array('attribute', SPH_GROUPBY_ATTR),
-     *
-     * @param array $values
-     */
-    public function addGroupBys($values) {
-        if (empty($values) || !is_array($values)) {
-            throw new ESphinxException('Groups must be a non empty array');
-        }
-
-        foreach ($values as $value) {
-            if (!is_array($value) || count($value) < 2) {
-                throw new ESphinxException('Invalid value for field');
-            }
-            $this->addGroupBy($value[0], $value[1], isset($value[2]) ? $value[2] : null);
-        }
-    }
-
-    /**
-     * Sets group func values, old values will be removed
-     *
-     * @param array $groupBy
-     */
-    public function setGroupBys($groupBy)
-    {
-        $this->cleanGroupBy();
-        $this->addGroupBys($groupBy);
-    }
-
-    /**
-     * Clean group func values
-     */
-    public function cleanGroupBy()
-    {
-        $this->_groupBy = array();
-    }
-
-    /**
-     * @return array
-     */
-    public function getGroupBys()
-    {
-        return $this->_groupBy;
     }
 
     /**

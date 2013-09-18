@@ -1,7 +1,8 @@
 <?php
 
 
-class SearchTest extends CDbTestCase
+
+class ApiSearchTest extends CDbTestCase
 {
     public function setUp()
     {
@@ -56,7 +57,7 @@ class SearchTest extends CDbTestCase
     {
         $sphinx = $this->createConnection();
 
-        $query = new ESphinxQuery('Article with Title', '*', array(
+        $query = new ESphinxQuery('Article with Title', 'article', array(
             'filters' => array(
                 array('user_id', array(1000, 2000))
             )
@@ -71,10 +72,10 @@ class SearchTest extends CDbTestCase
     {
         $sphinx = $this->createConnection();
 
-        $query1 = new ESphinxQuery('Article with Title', '*', array('filters' => array(
+        $query1 = new ESphinxQuery('Article with Title', 'article', array('filters' => array(
             array('user_id', array(1000, 2000))
         )));
-        $query2 = new ESphinxQuery('Article with Title', '*', array('filters' => array(
+        $query2 = new ESphinxQuery('Article with Title', 'article', array('filters' => array(
             array('user_id', array(3000, 4000))
         )));
 
@@ -101,7 +102,7 @@ class SearchTest extends CDbTestCase
     {
         $sphinx = $this->createConnection();
 
-        $query1 = new ESphinxQuery('Article with Title', '*', array(
+        $query1 = new ESphinxQuery('Article with Title', 'article', array(
             'filters'      => array(array('user_id', array(1000, 2000))),
             'rangeFilters' => array(array('rating', 'min' => 1.4, 'max' => 1.4)),
         ));
@@ -114,7 +115,7 @@ class SearchTest extends CDbTestCase
     {
         $sphinx = $this->createConnection();
 
-        $query = new ESphinxQuery('', '*', array(
+        $query = new ESphinxQuery('', 'article', array(
             'minId' => 2,
             'maxId' => 3,
         ));
@@ -134,7 +135,7 @@ class SearchTest extends CDbTestCase
         $criteria->sortMode = ESphinxSort::ATTR_DESC;
         $criteria->setSortBy('user_id');
 
-        $query = new ESphinxQuery('', '*', $criteria);
+        $query = new ESphinxQuery('', 'article', $criteria);
         $result = $sphinx->executeQuery($query);
 
         $this->assertEquals($result->getFound(), 5);
@@ -147,7 +148,7 @@ class SearchTest extends CDbTestCase
 
         $criteria->sortMode = ESphinxSort::ATTR_ASC;
 
-        $query = new ESphinxQuery('', '*', $criteria);
+        $query = new ESphinxQuery('', 'article', $criteria);
         $result = $sphinx->executeQuery($query);
 
         $this->assertEquals($result->getFound(), 5);
@@ -168,7 +169,7 @@ class SearchTest extends CDbTestCase
         $criteria->addOrder('user_id', 'ASC');
         $criteria->addOrder('id', 'DESC');
 
-        $query = new ESphinxQuery('', '*', $criteria);
+        $query = new ESphinxQuery('', 'article', $criteria);
         $result = $sphinx->executeQuery($query);
 
         $this->assertEquals($result->getFound(), 5);
@@ -184,14 +185,15 @@ class SearchTest extends CDbTestCase
     {
         $sphinx = $this->createConnection();
         $criteria = new ESphinxSearchCriteria;
-        $criteria->addGroupBy('user_id', ESphinxGroup::BY_ATTR);
+        $criteria->groupBy = 'user_id';
+        $criteria->groupBySort = '@count desc';
 
-        $query = new ESphinxQuery('', '*', $criteria);
+        $query = new ESphinxQuery('', 'article', $criteria);
         $result = $sphinx->executeQuery($query);
 
         $this->assertEquals(4, $result->getFound());
-
         $first = $result[0];
+
 
         $this->assertEquals(4000, $first->user_id);
         $this->assertEquals(2, $first->{'@count'});
@@ -201,7 +203,7 @@ class SearchTest extends CDbTestCase
     {
         $sphinx = $this->createConnection();
 
-        $query = new ESphinxQuery('', '*', array('limit' => 2));
+        $query = new ESphinxQuery('', 'article', array('limit' => 2));
         $result = $sphinx->executeQuery($query);
 
         $this->assertEquals(2, count($result));

@@ -250,6 +250,9 @@ class ESphinxMysqlConnection extends ESphinxBaseConnection
             $query->getIndexes(),
             $this->createDbCriteria($query)
         );
+        if (defined('aa')) {
+            dd($command);
+        }
         $reader = $command->query();
 
         $matches = $reader->readAll();
@@ -372,59 +375,62 @@ class ESphinxMysqlConnection extends ESphinxBaseConnection
 
     private function applyGroup(ESphinxQlCriteria $criteria, ESphinxSearchCriteria $queryCriteria)
     {
-        if (count($queryCriteria->getGroupBys()) > 1) {
-            throw new ESphinxException('For sql mode only one group by field can be applied');
+        if (!$queryCriteria->groupBy) {
+            return;
         }
 
-        if ($queryCriteria->getGroupBys()) {
-            $group = $queryCriteria->getGroupBys();
-            $group = reset($group);
-            switch ($group['value']) {
-                case ESphinxGroup::BY_ATTR:
-                    $criteria->group = $group['attribute'];
-                    break;
-                case ESphinxGroup::BY_DAY:
-                    $criteria->group = 'DAY('.$group['attribute'].')';
-                    break;
-                case ESphinxGroup::BY_WEEK:
-                    $criteria->group = 'WEEK('.$group['attribute'].')';
-                    break;
-                case ESphinxGroup::BY_MONTH:
-                    $criteria->group = 'MONTH('.$group['attribute'].')';
-                    break;
-                case ESphinxGroup::BY_YEAR:
-                    $criteria->group = 'YEAR('.$group['attribute'].')';
-                    break;
-            }
-
-            if ($group['groupSort']) {
-                $criteria->withinGroupOrder = $group['groupSort'];
-            }
+        switch ($queryCriteria->groupByFunc) {
+            case ESphinxGroup::BY_ATTR:
+                $criteria->group = $queryCriteria->groupBy;
+                break;
+            case ESphinxGroup::BY_DAY:
+                $criteria->group = 'DAY('.$queryCriteria->groupBy.')';
+                break;
+            case ESphinxGroup::BY_WEEK:
+                $criteria->group = 'WEEK('.$queryCriteria->groupBy.')';
+                break;
+            case ESphinxGroup::BY_MONTH:
+                $criteria->group = 'MONTH('.$queryCriteria->groupBy.')';
+                break;
+            case ESphinxGroup::BY_YEAR:
+                $criteria->group = 'YEAR('.$queryCriteria->groupBy.')';
+                break;
+            default:
+                throw new ESphinxException('Unknow group function');
         }
+
+        $criteria->order = $queryCriteria->groupBySort;
     }
 
     private function applyOrder(ESphinxQlCriteria $criteria, ESphinxSearchCriteria $queryCriteria)
     {
+        $order = null;
         if ($queryCriteria->sortMode == ESphinxSort::EXTENDED) {
             if ($orderArray = $queryCriteria->getOrders()) {
-                $criteria->order = $this->implodeKV($orderArray);
+                $order = $this->implodeKV($orderArray);
             }
-        } else {
-            if ($queryCriteria->getSortBy()) {
-                $criteria->order = $queryCriteria->getSortBy() . ' ';
-                switch ($queryCriteria->sortMode) {
-                    case ESphinxSort::ATTR_ASC:
-                        $criteria->order .= 'ASC';
-                        break;
-                    case ESphinxSort::ATTR_DESC:
-                        $criteria->order .= 'DESC';
-                        break;
-                    case ESphinxSort::RELEVANCE:
-                        $criteria->order = '@weight DESC';
-                        break;
-                    default:
-                        throw new ESphinxException('Not implemented for Sphinx Ql connection');
-                }
+        } else if ($queryCriteria->getSortBy()) {
+            $order = $queryCriteria->getSortBy() . ' ';
+            switch ($queryCriteria->sortMode) {
+                case ESphinxSort::ATTR_ASC:
+                    $order .= 'ASC';
+                    break;
+                case ESphinxSort::ATTR_DESC:
+                    $order .= 'DESC';
+                    break;
+                case ESphinxSort::RELEVANCE:
+                    $order = '@weight DESC';
+                    break;
+                default:
+                    throw new ESphinxException('Not implemented for Sphinx Ql connection');
+            }
+        }
+
+        if ($order) {
+            if ($queryCriteria->groupBy) {
+                $criteria->withinGroupOrder = $order;
+            } else {
+                $criteria->order = $order;
             }
         }
     }
