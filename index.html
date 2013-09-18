@@ -1,0 +1,120 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Sphinx Yii Component by sergebezborodov</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Sphinx Yii Component</h1>
+        <p>Yii component for work with Sphinx Search</p>
+        <p class="view"><a href="https://github.com/sergebezborodov/sphinx-yii">View the Project on GitHub <small>sergebezborodov/sphinx-yii</small></a></p>
+        <ul>
+          <li><a href="https://github.com/sergebezborodov/sphinx-yii/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/sergebezborodov/sphinx-yii/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/sergebezborodov/sphinx-yii">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a name="yii-sphinx-component" class="anchor" href="#yii-sphinx-component"><span class="octicon octicon-link"></span></a>Yii Sphinx Component</h1>
+
+<p>Simple and powerful component for work with Sphinx search engine.</p>
+
+<h2>
+<a name="features" class="anchor" href="#features"><span class="octicon octicon-link"></span></a>Features</h2>
+
+<ul>
+<li>Simple query methods</li>
+<li>Extended ESphinxSearchCriteria for complex queries</li>
+<li>Support packeted queries</li>
+<li>Unit tests coverage</li>
+</ul><h2>
+<a name="configure" class="anchor" href="#configure"><span class="octicon octicon-link"></span></a>Configure</h2>
+
+<div class="highlight highlight-php"><pre><span class="s1">'components'</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span>
+    <span class="s1">'sphinx'</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span>
+        <span class="s1">'server'</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span><span class="s1">'localhost'</span><span class="p">,</span> <span class="mi">3386</span><span class="p">),</span>
+        <span class="s1">'connectionTimeout'</span> <span class="o">=&gt;</span> <span class="mi">3</span><span class="p">,</span> <span class="c1">// optional, default 0 - no limit</span>
+        <span class="s1">'queryTimeout'</span>      <span class="o">=&gt;</span> <span class="mi">5</span><span class="p">,</span> <span class="c1">// optional, default 0 - no limit</span>
+    <span class="p">),</span>
+<span class="p">),</span>
+</pre></div>
+
+<h2>
+<a name="how-to-use" class="anchor" href="#how-to-use"><span class="octicon octicon-link"></span></a>How to use</h2>
+
+<p>All component classes names begins with ESphinx.
+Main object we used for querying is ESphinxQuery.</p>
+
+<p>Simple query with text in all indexes:</p>
+
+<div class="highlight highlight-php"><pre><span class="nx">Yii</span><span class="o">::</span><span class="na">app</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">sphinx</span><span class="o">-&gt;</span><span class="na">executeQuery</span><span class="p">(</span><span class="k">new</span> <span class="nx">ESphinxQuery</span><span class="p">(</span><span class="s1">'Hello world!'</span><span class="p">));</span>
+</pre></div>
+
+<p>Query in index:</p>
+
+<div class="highlight highlight-php"><pre><span class="nx">Yii</span><span class="o">::</span><span class="na">app</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">sphinx</span><span class="o">-&gt;</span><span class="na">executeQuery</span><span class="p">(</span><span class="k">new</span> <span class="nx">ESphinxQuery</span><span class="p">(</span><span class="s1">'Hello world!'</span><span class="p">),</span> <span class="s1">'blog'</span><span class="p">);</span>
+</pre></div>
+
+<h2>
+<a name="extended-queries" class="anchor" href="#extended-queries"><span class="octicon octicon-link"></span></a>Extended queries</h2>
+
+<p>Often we need search in index with some parametrs and options. For this task component has class ESphinxSearchCriteria.
+It's very similar to CDbCriteria and has the same idea.</p>
+
+<p>Search in article index with some parametrs:</p>
+
+<div class="highlight highlight-php"><pre><span class="nv">$criteria</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ESphinxSearchCriteria</span><span class="p">(</span><span class="k">array</span><span class="p">(</span>
+    <span class="s1">'sortMode'</span> <span class="o">=&gt;</span> <span class="nx">ESphinxSort</span><span class="o">::</span><span class="na">EXTENDED</span><span class="p">,</span>
+    <span class="s1">'orders'</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span>
+        <span class="s1">'date_created'</span> <span class="o">=&gt;</span> <span class="s1">'DESC'</span><span class="p">,</span>
+        <span class="s1">'date_updated'</span> <span class="o">=&gt;</span> <span class="s1">'ASC'</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="s1">'mathMode'</span> <span class="o">=&gt;</span> <span class="nx">ESphinxMatch</span><span class="o">::</span><span class="na">EXTENDED</span><span class="p">,</span>
+<span class="p">));</span>
+
+<span class="nv">$query</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ESphinxQuery</span><span class="p">(</span><span class="s1">'@(title,body) hello world'</span><span class="p">,</span> <span class="s1">'articles'</span><span class="p">,</span> <span class="nv">$criteria</span><span class="p">);</span>
+</pre></div>
+
+<p>Criteria can changing in work.</p>
+
+<div class="highlight highlight-php"><pre><span class="nv">$criteria</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ESphinxSearchCriteria</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">'mathMode'</span> <span class="o">=&gt;</span> <span class="nx">ESphinxMatch</span><span class="o">::</span><span class="na">EXTENDED</span><span class="p">));</span>
+<span class="nv">$criteria</span><span class="o">-&gt;</span><span class="na">addFilter</span><span class="p">(</span><span class="s1">'user_id'</span><span class="p">,</span> <span class="mi">1000</span><span class="p">);</span> <span class="c1">// add filter by user, we can use integer or integer array</span>
+<span class="nv">$criteria</span><span class="o">-&gt;</span><span class="na">addFilter</span><span class="p">(</span><span class="s1">'site_id'</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="s1">'site'</span><span class="p">);</span> <span class="c1">// add filter by site_id field with key value (will used later)</span>
+
+<span class="c1">// querying</span>
+<span class="nv">$result</span> <span class="o">=</span> <span class="nx">Yii</span><span class="o">::</span><span class="na">app</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">sphinx</span><span class="o">-&gt;</span><span class="na">executeQuery</span><span class="p">(</span><span class="k">new</span> <span class="nx">ESphinxQuery</span><span class="p">(</span><span class="s1">''</span><span class="p">,</span> <span class="s1">'products'</span><span class="p">,</span> <span class="nv">$criteria</span><span class="p">));</span>
+
+<span class="c1">// search same query by another site</span>
+<span class="nv">$criteria</span><span class="o">-&gt;</span><span class="na">addFilter</span><span class="p">(</span><span class="s1">'site_id'</span><span class="p">,</span> <span class="mi">321</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="s1">'site'</span><span class="p">);</span> <span class="c1">// change site_id param value</span>
+
+<span class="c1">// querying</span>
+<span class="nv">$result</span> <span class="o">=</span> <span class="nx">Yii</span><span class="o">::</span><span class="na">app</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">sphinx</span><span class="o">-&gt;</span><span class="na">executeQuery</span><span class="p">(</span><span class="k">new</span> <span class="nx">ESphinxQuery</span><span class="p">(</span><span class="s1">''</span><span class="p">,</span> <span class="s1">'products'</span><span class="p">,</span> <span class="nv">$criteria</span><span class="p">));</span>
+
+<span class="c1">// search same query but without site_id param</span>
+<span class="nv">$criteria</span><span class="o">-&gt;</span><span class="na">deleteFilter</span><span class="p">(</span><span class="s1">'site'</span><span class="p">);</span> <span class="c1">// delete filter on site_id field</span>
+
+<span class="c1">// querying....</span>
+</pre></div>
+      </section>
+    </div>
+    <footer>
+      <p>Project maintained by <a href="https://github.com/sergebezborodov">sergebezborodov</a></p>
+      <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
+    </footer>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
