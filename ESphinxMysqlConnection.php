@@ -436,7 +436,6 @@ class ESphinxMysqlConnection extends ESphinxBaseConnection
         }
     }
 
-
     private function applyOptions(ESphinxQlCriteria $criteria, ESphinxSearchCriteria $queryCriteria)
     {
         $options = array();
@@ -482,6 +481,16 @@ class ESphinxMysqlConnection extends ESphinxBaseConnection
         }
 
         $options['max_query_time'] = $queryCriteria->queryTimeout !== null ? $queryCriteria->queryTimeout : $this->queryTimeout;
+
+        // ranking mode
+        if ($queryCriteria->rankingMode) {
+            $ranker = ESphinxRank::item($queryCriteria->rankingMode);
+            if ($queryCriteria->rankingMode != ESphinxRank::EXPR) {
+                $options['ranker'] = $ranker;
+            } else {
+                $options['ranker'] = $ranker."('".$queryCriteria->rankingExpression."')";
+            }
+        }
 
         $criteria->option = $this->implodeKV($options, '=');
     }

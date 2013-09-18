@@ -251,4 +251,19 @@ class ApiSearchTest extends CDbTestCase
         $this->assertEquals(1, $first->id);
         $this->assertEquals(2, $second->id);
     }
+
+    public function testExprRanking()
+    {
+        $sphinx = $this->createConnection();
+
+        $extRank = $sphinx->executeQuery(new ESphinxQuery('', 'article', array(
+            'rankingMode'       => ESphinxRank::EXPR,
+            'rankingExpression' => 'sum(lcs*user_weight)*1000+bm25',
+        )));
+        $bm025 = $sphinx->executeQuery(new ESphinxQuery('', 'article', array(
+            'rankingMode'       => ESphinxRank::BM25
+        )));
+
+        $this->assertEquals($extRank, $bm025);
+    }
 }

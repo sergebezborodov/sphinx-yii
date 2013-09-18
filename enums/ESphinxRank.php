@@ -2,6 +2,8 @@
 
 /**
  * Sphinx rank mode types
+ *
+ * @see http://sphinxsearch.com/docs/current.html#weighting
  */
 class ESphinxRank
 {
@@ -77,7 +79,6 @@ class ESphinxRank
     const TOTAL = 9;
 
 
-
     /**
      * List all rank modes.
      *
@@ -86,17 +87,22 @@ class ESphinxRank
     public static function items()
     {
         return array(
-            self::PROXIMITY_BM25,
-            self::BM25,
-            self::NONE,
-            self::WORDCOUNT,
-            self::PROXIMITY,
-            self::MATCHANY,
-            self::FIELDMASK,
-            self::SPH04,
-            self::EXPR,
-            self::TOTAL,
+            self::PROXIMITY_BM25 => 'proximity_bm25',
+            self::BM25           => 'bm25',
+            self::NONE           => 'none',
+            self::WORDCOUNT      => 'wordcount',
+            self::PROXIMITY      => 'proximity',
+            self::MATCHANY       => 'matchany',
+            self::FIELDMASK      => 'fieldmask',
+            self::SPH04          => 'sph04',
+            self::EXPR           => 'expr',
         );
+    }
+
+    public static function item($key)
+    {
+        $items = self::items();
+        return $key ? $items[$key] : null;
     }
 
     /**
@@ -107,6 +113,6 @@ class ESphinxRank
      */
     public static function isValid($value)
     {
-        return in_array($value, self::items());
+        return array_key_exists($value, self::items());
     }
 }

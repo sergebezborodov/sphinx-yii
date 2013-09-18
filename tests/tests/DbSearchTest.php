@@ -1,5 +1,6 @@
 <?php
 
+require_once 'ApiSearchTest.php';
 
 /**
  * Test for search with mysql connection interface

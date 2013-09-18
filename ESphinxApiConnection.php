@@ -287,7 +287,7 @@ class ESphinxApiConnection extends ESphinxBaseConnection
     protected function applyCriteria(ESphinxSearchCriteria $criteria)
     {
         $this->applyMatchMode($criteria->matchMode);
-        $this->applyRankMode($criteria->rankingMode);
+        $this->applyRankMode($criteria);
 
         if ($criteria->sortMode == ESphinxSort::EXTENDED) {
             $orders = '';
@@ -427,14 +427,17 @@ class ESphinxApiConnection extends ESphinxBaseConnection
         $this->sphinxClient->SetMatchMode($mode);
     }
 
-    protected function applyRankMode($mode)
+    protected function applyRankMode(ESphinxSearchCriteria $criteria)
     {
-        $mode = (int)$mode;
-        if (!ESphinxRank::isValid($mode)) {
-            throw new ESphinxException("Rank mode {$mode} is not defined");
+        if (!$criteria->rankingMode) {
+            return;
         }
 
-        $this->sphinxClient->SetRankingMode($mode);
+        if (!ESphinxRank::isValid($criteria->rankingMode)) {
+            throw new ESphinxException("Rank mode {$criteria->rankingMode} is not defined");
+        }
+
+        $this->sphinxClient->SetRankingMode($criteria->rankingMode, $criteria->rankingExpression);
     }
 
     /**

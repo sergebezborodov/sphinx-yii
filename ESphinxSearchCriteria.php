@@ -9,6 +9,8 @@ class ESphinxSearchCriteria extends CComponent
 {
     /**
      * @var string fields for select
+     * @url http://sphinxsearch.com/docs/current.html#sphinxql-select
+     * @url http://sphinxsearch.com/docs/current.html#api-func-query
      */
     public $select = '*';
 
@@ -24,7 +26,7 @@ class ESphinxSearchCriteria extends CComponent
 
     /**
      * @var int query sorting mode
-     * @url http://sphinxsearch.com/docs/manual-2.0.2.html#sorting-modes
+     * @url http://sphinxsearch.com/docs/current.html#api-func-setsortmode
      */
     public $sortMode;
 
@@ -40,13 +42,22 @@ class ESphinxSearchCriteria extends CComponent
 
     /**
      * @var int
+     * @url http://sphinxsearch.com/docs/current.html#matching-modes
      */
     public $matchMode = ESphinxMatch::ALL;
 
     /**
      * @var int
+     *
      */
     public $rankingMode;
+
+    /**
+     * String expression only for SPH_RANK_EXPR mode
+     *
+     * @var string
+     */
+    public $rankingExpression = '';
 
     /**
      * @var array fields weights

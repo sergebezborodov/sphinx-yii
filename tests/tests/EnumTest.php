@@ -42,7 +42,7 @@ class EnumTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(ESphinxRank::EXPR, SPH_RANK_EXPR);
         $this->assertEquals(ESphinxRank::TOTAL, SPH_RANK_TOTAL);
 
-        $this->assertCount(10, ESphinxRank::items());
+        $this->assertCount(9, ESphinxRank::items());
     }
 
     public function testSort()
