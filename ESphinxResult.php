@@ -115,7 +115,7 @@ class ESphinxResult extends CComponent implements Iterator, ArrayAccess, Countab
 	public function next()
 	{
 		$this->_index++;
-		if(isset($this->_matches[$this->_index])) {
+		if (isset($this->_matches[$this->_index])) {
 			if(!isset($this->_match_objects[$this->_index])) {
 				$this->_match_objects[$this->_index] = new ESphinxMatchResult($this->_matches[$this->_index]);
 			}
@@ -248,7 +248,7 @@ class ESphinxMatchResult extends CComponent
 		$this->_match = $match;
 	    $this->_id = (int)$match['id'];
 	    $this->_weight = (int)$match['weight'];
-	    $this->_attributes = (array)$match['attrs'];
+	    $this->_attributes = isset($match['attrs']) ? (array)$match['attrs'] : $match;
 	}
 
     public function getId()

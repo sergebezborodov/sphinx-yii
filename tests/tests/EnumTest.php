@@ -12,6 +12,8 @@ class EnumTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(ESphinxGroup::BY_MONTH, SPH_GROUPBY_MONTH);
         $this->assertEquals(ESphinxGroup::BY_YEAR, SPH_GROUPBY_YEAR);
         $this->assertEquals(ESphinxGroup::BY_ATTR, SPH_GROUPBY_ATTR);
+
+        $this->assertCount(5, ESphinxGroup::items());
     }
 
     public function testMath()
@@ -23,6 +25,8 @@ class EnumTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(ESphinxMatch::EXTENDED, SPH_MATCH_EXTENDED);
         $this->assertEquals(ESphinxMatch::FULLSCAN, SPH_MATCH_FULLSCAN);
         $this->assertEquals(ESphinxMatch::EXTENDED2, SPH_MATCH_EXTENDED2);
+
+        $this->assertCount(7, ESphinxMatch::items());
     }
 
     public function testRank()
@@ -37,6 +41,8 @@ class EnumTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(ESphinxRank::SPH04, SPH_RANK_SPH04);
         $this->assertEquals(ESphinxRank::EXPR, SPH_RANK_EXPR);
         $this->assertEquals(ESphinxRank::TOTAL, SPH_RANK_TOTAL);
+
+        $this->assertCount(9, ESphinxRank::items());
     }
 
     public function testSort()
@@ -47,5 +53,7 @@ class EnumTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(ESphinxSort::TIME_SEGMENTS, SPH_SORT_TIME_SEGMENTS);
         $this->assertEquals(ESphinxSort::EXTENDED, SPH_SORT_EXTENDED);
         $this->assertEquals(ESphinxSort::EXPR, SPH_SORT_EXPR);
+
+        $this->assertCount(6, ESphinxSort::items());
     }
 }

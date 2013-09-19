@@ -13,7 +13,8 @@ define('ROOT', realpath(dirname(__FILE__).DS.'..'));
 
 require ROOT.'/../../framework/yii.php';
 
-require ROOT.'/sphinxapi.php';
+// TODO: change it to sphinxapi-2.1.1.php if you are using beta version
+require ROOT.'/sphinxapi-2.0.9.php';
 
 require ROOT.'/enums/ESphinxGroup.php';
 require ROOT.'/enums/ESphinxMatch.php';
@@ -26,7 +27,12 @@ require ROOT.'/ESphinxQuery.php';
 require ROOT.'/ESphinxResult.php';
 
 require ROOT . '/ESphinxBaseConnection.php';
-require ROOT . '/ESphinxConnection.php';
+require ROOT . '/ESphinxApiConnection.php';
+require ROOT . '/ESphinxMysqlConnection.php';
+
+require ROOT . '/ql/ESphinxQlDbConnection.php';
+require ROOT . '/ql/ESphinxQlCommandBuilder.php';
+require ROOT . '/ql/ESphinxQlCriteria.php';
 
 require 'TestApplication.php';
 Yii::import('system.test.*');

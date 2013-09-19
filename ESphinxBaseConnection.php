@@ -5,6 +5,22 @@
  */
 abstract class ESphinxBaseConnection extends CComponent
 {
+    const DEFAULT_SERVER = '127.0.0.1';
+    const DEFAULT_PORT   = 3314;
+
+
+    /**
+     * @var ESphinxQuery[]
+     */
+    private $queries = array();
+
+    /**
+     * Init internal state
+     */
+    public function init()
+    {}
+
+
     /**
      * Set Sphinx server connection parameters.
      *
@@ -147,4 +163,50 @@ abstract class ESphinxBaseConnection extends CComponent
      * @return ESphinxResult[]
      */
     abstract public function executeQueries(array $queries);
+
+    /**
+    /**
+     * Adds query to internal storage
+     *
+     * @param ESphinxQuery $query
+     */
+    public function addQuery(ESphinxQuery $query)
+    {
+        $this->queries[] = clone $query;
+    }
+
+    /**
+     * Clean added queries
+     */
+    public function cleanQueries()
+    {
+        $this->queries = array();
+    }
+
+    /**
+     * Count of added queries
+     *
+     * @return int
+     */
+    public function queriesCount()
+    {
+        return count($this->queries);
+    }
+
+    /**
+     * Runs queries from internal storage
+     *
+     * @retun ESphinxResult[]
+     */
+    public function runQueries()
+    {
+        if (empty($this->queries)) {
+            throw new ESphinxException('There are no added queries, use addQuery method');
+        }
+
+        $result = $this->executeQueries($this->queries);
+        $this->cleanQueries();
+        return $result;
+    }
+
 }

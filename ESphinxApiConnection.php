@@ -6,11 +6,8 @@
  * @property int $connectionTimeout
  * @property int $queryTimeout
  */
-class ESphinxConnection extends ESphinxBaseConnection
+class ESphinxApiConnection extends ESphinxBaseConnection
 {
-    const DEFAULT_SERVER = 'localhost';
-    const DEFAULT_PORT   = 3314;
-
     /**
      * Instance of SphinxClient
      *
@@ -25,17 +22,13 @@ class ESphinxConnection extends ESphinxBaseConnection
      */
     private $isConnected = false;
 
+    private $_queryTimeout = 0;
+
     public function __construct()
     {
         $this->sphinxClient = new SphinxClient();
         $this->sphinxClient->SetArrayResult(true);
     }
-
-    /**
-     * Init internal state
-     */
-    public function init()
-    {}
 
     /**
      * Set Sphinx server connection parameters.
@@ -151,7 +144,7 @@ class ESphinxConnection extends ESphinxBaseConnection
      */
     public function setQueryTimeout($timeout)
     {
-        $this->sphinxClient->SetMaxQueryTime((int)$timeout);
+        $this->queryTimeout = $timeout;
     }
 
 
@@ -288,13 +281,13 @@ class ESphinxConnection extends ESphinxBaseConnection
     protected function applyQuery(ESphinxQuery $query)
     {
         $this->applyCriteria($query->getCriteria());
-        $this->sphinxClient->AddQuery($query->getText(), $query->getIndexes());
+        $this->sphinxClient->AddQuery($query->getText(), $query->getIndexes(), $query->criteria->comment);
     }
 
     protected function applyCriteria(ESphinxSearchCriteria $criteria)
     {
         $this->applyMatchMode($criteria->matchMode);
-        $this->applyRankMode($criteria->rankingMode);
+        $this->applyRankMode($criteria);
 
         if ($criteria->sortMode == ESphinxSort::EXTENDED) {
             $orders = '';
@@ -328,10 +321,8 @@ class ESphinxConnection extends ESphinxBaseConnection
         }
 
         // apply group
-        if ($groupArray = $criteria->getGroupBys()) {
-            foreach ($groupArray as $group) {
-                $this->sphinxClient->SetGroupBy($group['attribute'], $group['value'], $group['groupSort']);
-            }
+        if ($criteria->groupBy) {
+            $this->sphinxClient->SetGroupBy($criteria->groupBy, $criteria->groupByFunc, $criteria->groupBySort);
         }
 
         if ($criteria->groupDistinct) {
@@ -340,7 +331,7 @@ class ESphinxConnection extends ESphinxBaseConnection
 
         // apply id range
         if($criteria->getIsIdRangeSetted()) {
-            $this->sphinxClient->SetIDRange($criteria->getIdMin(), $criteria->getMaxId());
+            $this->sphinxClient->SetIDRange($criteria->getMinId(), $criteria->getMaxId());
         }
 
         // apply weights
@@ -349,6 +340,36 @@ class ESphinxConnection extends ESphinxBaseConnection
 
         $this->applyFilters($criteria->getFilters());
         $this->applyRanges($criteria->getRangeFilters());
+
+        $this->sphinxClient->SetMaxQueryTime($criteria->queryTimeout !== null ? $criteria->queryTimeout : $this->_queryTimeout);
+
+        if (VER_COMMAND_SEARCH >= 0x11D) {
+            $this->applyOptions($criteria);
+        }
+    }
+
+
+    private function applyOptions(ESphinxSearchCriteria $queryCriteria)
+    {
+        if ($queryCriteria->booleanSimplify !== null) {
+            $this->sphinxClient->SetQueryFlag('boolean_simplify', $queryCriteria->booleanSimplify);
+        }
+
+        if (($revScan = $queryCriteria->getReverseScan()) !== null) {
+            $this->sphinxClient->SetQueryFlag('reverse_scan', $revScan ?  1 : 0);
+        }
+
+        if (($sortMode = $queryCriteria->getSortMethod()) !== null) {
+            $this->sphinxClient->SetQueryFlag('sort_method', $sortMode);
+        }
+
+        if ($queryCriteria->globalIdf !== null) {
+            $this->sphinxClient->SetQueryFlag('global_idf', $queryCriteria->globalIdf);
+        }
+
+        if (($idf = $queryCriteria->getIdf()) !== null) {
+            $this->sphinxClient->SetQueryFlag('idf', $idf);
+        }
     }
 
     protected function applyRanges(array $ranges)
@@ -406,14 +427,17 @@ class ESphinxConnection extends ESphinxBaseConnection
         $this->sphinxClient->SetMatchMode($mode);
     }
 
-    protected function applyRankMode($mode)
+    protected function applyRankMode(ESphinxSearchCriteria $criteria)
     {
-        $mode = (int)$mode;
-        if (!ESphinxRank::isValid($mode)) {
-            throw new ESphinxException("Rank mode {$mode} is not defined");
+        if (!$criteria->rankingMode) {
+            return;
         }
 
-        $this->sphinxClient->SetRankingMode($mode);
+        if (!ESphinxRank::isValid($criteria->rankingMode)) {
+            throw new ESphinxException("Rank mode {$criteria->rankingMode} is not defined");
+        }
+
+        $this->sphinxClient->SetRankingMode($criteria->rankingMode, $criteria->rankingExpression);
     }
 
     /**
@@ -433,6 +457,9 @@ class ESphinxConnection extends ESphinxBaseConnection
         $this->sphinxClient->SetRankingMode(SPH_RANK_NONE);
         $this->sphinxClient->SetSortMode(SPH_SORT_RELEVANCE, "");
         $this->sphinxClient->SetSelect("*");
+        if (VER_COMMAND_SEARCH >= 0x11D) {
+            $this->sphinxClient->ResetQueryFlag();
+        }
     }
 
     protected function execute()

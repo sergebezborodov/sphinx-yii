@@ -290,22 +290,15 @@ class CriteriaTest extends PHPUnit_Framework_TestCase
     {
         $criteria = new ESphinxSearchCriteria;
 
-        $criteria->addGroupBy('field', ESphinxGroup::BY_ATTR);
-        $this->assertEquals($criteria->getGroupBys(), array(
-            array('attribute' => 'field', 'value' => ESphinxGroup::BY_ATTR, 'groupSort' => '@group desc'),
-        ));
+        $this->assertNull($criteria->groupBy);
 
-        $criteria->cleanGroupBy();
-        $this->assertEquals($criteria->getGroupBys(), array());
+        $criteria->groupBy = 'field';
+        $criteria->groupByFunc = ESphinxGroup::BY_ATTR;
+        $criteria->groupBySort = '@weight desc';
 
-        $criteria->addGroupBys(array(
-            array('field1', ESphinxGroup::BY_ATTR),
-            array('field2', ESphinxGroup::BY_ATTR, '@group desc'),
-        ));
-        $this->assertEquals($criteria->getGroupBys(), array(
-            array('attribute' => 'field1', 'value' => ESphinxGroup::BY_ATTR, 'groupSort' => null),
-            array('attribute' => 'field2', 'value' => ESphinxGroup::BY_ATTR, 'groupSort' => '@group desc'),
-        ));
+        $this->assertEquals('field', $criteria->groupBy);
+        $this->assertEquals(ESphinxGroup::BY_ATTR, $criteria->groupByFunc);
+        $this->assertEquals('@weight desc', $criteria->groupBySort);
     }
 
     public function testCreate()
@@ -330,10 +323,9 @@ class CriteriaTest extends PHPUnit_Framework_TestCase
                 'field' => 123,
                 'field2' => 123,
             ),
-            'groupBys' => array(
-                array('field1', ESphinxGroup::BY_ATTR),
-                array('field2', ESphinxGroup::BY_ATTR, '@group desc'),
-            ),
+            'groupBy' => 'field2',
+            'groupByFunc' => ESphinxGroup::BY_ATTR,
+            'groupBySort' => '@group desc',
             'limit'  => 20,
             'offset' => 10,
         ));
@@ -361,13 +353,22 @@ class CriteriaTest extends PHPUnit_Framework_TestCase
             'field2' => 123,
         ));
 
-        $this->assertEquals($criteria->getGroupBys(), array(
-            array('attribute' => 'field1', 'value' => ESphinxGroup::BY_ATTR, 'groupSort' => null),
-            array('attribute' => 'field2', 'value' => ESphinxGroup::BY_ATTR, 'groupSort' => '@group desc'),
-        ));
+        $this->assertEquals('field2', $criteria->groupBy);
+        $this->assertEquals(ESphinxGroup::BY_ATTR, $criteria->groupByFunc);
+        $this->assertEquals('@group desc', $criteria->groupBySort);
 
         $this->assertEquals($criteria->limit, 20);
         $this->assertEquals($criteria->offset, 10);
+    }
+
+
+    public function testQueryTimeOut()
+    {
+        $criteria = new ESphinxSearchCriteria;
+        $this->assertNull($criteria->queryTimeout);
+
+        $criteria->queryTimeout = 10;
+        $this->assertEquals(10, $criteria->queryTimeout);
     }
 
 }
