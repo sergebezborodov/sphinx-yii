@@ -2,7 +2,7 @@ Yii Sphinx Component
 ====================
 
 Simple and powerful component for work with Sphinx search engine. This is a beta version, please help with testing and bug reports.
-You can find old stable version at "Releases page"
+You can find old stable version at "releases" page
 
 Features
 --------
