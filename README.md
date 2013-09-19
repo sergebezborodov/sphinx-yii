@@ -18,6 +18,13 @@ Configure
 ----------
 
 ```php
+'import' => array(
+    // i hope remove this in new versions
+    'ext.sphinx.*',
+    'ext.sphinx.ql.*',
+    'ext.sphinx.enums.*',
+),
+
 'components' => array(
     'sphinx' => array(
         'class' => 'ext.sphinx.ESphinxApiConnection', // sphinx api mode
