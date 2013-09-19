@@ -8,7 +8,8 @@ Features
 
 * Simple query methods
 * Extended ESphinxSearchCriteria for complex queries
-* Support packeted queries
+* Support connection by Sphinx API and Sphinx QL
+* Support packeted queries for both connections
 * Unit tests coverage
 
 
@@ -31,11 +32,6 @@ How to use
 
 All component classes names begins with ESphinx.
 Main object we used for querying is ESphinxQuery.
-
-Simple query with text in all indexes:
-```php
-Yii::app()->sphinx->executeQuery(new ESphinxQuery('Hello world!'));
-```
 
 Query in index:
 ```php
@@ -63,7 +59,7 @@ $criteria = new ESphinxSearchCriteria(array(
 $query = new ESphinxQuery('@(title,body) hello world', 'articles', $criteria);
 ```
 
-Criteria can changing in work.
+Criteria can changing at work.
 ```php
 $criteria = new ESphinxSearchCriteria(array('mathMode' => ESphinxMatch::EXTENDED));
 $criteria->addFilter('user_id', 1000); // add filter by user, we can use integer or integer array
@@ -82,4 +78,29 @@ $result = Yii::app()->sphinx->executeQuery(new ESphinxQuery('', 'products', $cri
 $criteria->deleteFilter('site'); // delete filter on site_id field
 
 // querying....
+```
+
+
+Multi queries
+-------------
+One of the powerfull sphinx features is multi queries (packet queries). When you send two or more queries
+sphinx does internal optimisation for faster work.
+
+```
+$query1 = new ESphinxQuery('', 'products', array('filters' => array(array('site_id', 123))));
+$query2 = new ESphinxQuery('', 'products', array('filters' => array(array('site_id', 321))));
+
+$results = Yii::app()->sphinx->executeQueries(array($query1, $query2));
+```
+
+
+Another way to add queries:
+```
+$query = new ESphinxQuery('', 'products', array('filters' => array(array('site_id', 123, 'key' => 'site_id')))));
+Yii::app()->sphinx->addQuery($query);
+
+// change previous site_id filter value
+$query->criteria->addFilter('site_id', 321, false, 'site_id');
+
+$results = Yii::app()->sphinx->runQueries();
 ```

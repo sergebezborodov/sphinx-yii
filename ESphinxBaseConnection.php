@@ -176,6 +176,24 @@ abstract class ESphinxBaseConnection extends CComponent
     }
 
     /**
+     * Clean added queries
+     */
+    public function cleanQueries()
+    {
+        $this->queries = array();
+    }
+
+    /**
+     * Count of added queries
+     *
+     * @return int
+     */
+    public function queriesCount()
+    {
+        return count($this->queries);
+    }
+
+    /**
      * Runs queries from internal storage
      *
      * @retun ESphinxResult[]
@@ -187,7 +205,7 @@ abstract class ESphinxBaseConnection extends CComponent
         }
 
         $result = $this->executeQueries($this->queries);
-        $this->queries = array();
+        $this->cleanQueries();
         return $result;
     }
 
