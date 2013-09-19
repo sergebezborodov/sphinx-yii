@@ -22,7 +22,8 @@
             "ESphinxQuery.php",
             "ESphinxResult.php",
             "ESphinxSearchCriteria.php",
-            "enums/"
+            "enums/",
+            "ql/"
         ]
     }
 }
