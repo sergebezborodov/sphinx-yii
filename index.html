@@ -30,7 +30,8 @@
         <h1>
 <a name="yii-sphinx-component" class="anchor" href="#yii-sphinx-component"><span class="octicon octicon-link"></span></a>Yii Sphinx Component</h1>
 
-<p>Simple and powerful component for work with Sphinx search engine.</p>
+<p>Simple and powerful component for work with Sphinx search engine. This is a beta version, please help with testing and bug reports.
+You can find old stable version at "releases" page</p>
 
 <h2>
 <a name="features" class="anchor" href="#features"><span class="octicon octicon-link"></span></a>Features</h2>
@@ -38,13 +39,23 @@
 <ul>
 <li>Simple query methods</li>
 <li>Extended ESphinxSearchCriteria for complex queries</li>
-<li>Support packeted queries</li>
+<li>Support connection by Sphinx API and Sphinx QL</li>
+<li>Support packeted queries for both connections</li>
 <li>Unit tests coverage</li>
 </ul><h2>
 <a name="configure" class="anchor" href="#configure"><span class="octicon octicon-link"></span></a>Configure</h2>
 
-<div class="highlight highlight-php"><pre><span class="s1">'components'</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span>
+<div class="highlight highlight-php"><pre><span class="s1">'import'</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span>
+    <span class="c1">// i hope remove this in new versions</span>
+    <span class="s1">'ext.sphinx.*'</span><span class="p">,</span>
+    <span class="s1">'ext.sphinx.ql.*'</span><span class="p">,</span>
+    <span class="s1">'ext.sphinx.enums.*'</span><span class="p">,</span>
+<span class="p">),</span>
+
+<span class="s1">'components'</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span>
     <span class="s1">'sphinx'</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span>
+        <span class="s1">'class'</span> <span class="o">=&gt;</span> <span class="s1">'ext.sphinx.ESphinxApiConnection'</span><span class="p">,</span> <span class="c1">// sphinx api mode</span>
+        <span class="c1">//'class' =&gt; 'ext.sphinx.ESphinxMysqlConnection', for sphinx ql mode</span>
         <span class="s1">'server'</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span><span class="s1">'localhost'</span><span class="p">,</span> <span class="mi">3386</span><span class="p">),</span>
         <span class="s1">'connectionTimeout'</span> <span class="o">=&gt;</span> <span class="mi">3</span><span class="p">,</span> <span class="c1">// optional, default 0 - no limit</span>
         <span class="s1">'queryTimeout'</span>      <span class="o">=&gt;</span> <span class="mi">5</span><span class="p">,</span> <span class="c1">// optional, default 0 - no limit</span>
@@ -57,11 +68,6 @@
 
 <p>All component classes names begins with ESphinx.
 Main object we used for querying is ESphinxQuery.</p>
-
-<p>Simple query with text in all indexes:</p>
-
-<div class="highlight highlight-php"><pre><span class="nx">Yii</span><span class="o">::</span><span class="na">app</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">sphinx</span><span class="o">-&gt;</span><span class="na">executeQuery</span><span class="p">(</span><span class="k">new</span> <span class="nx">ESphinxQuery</span><span class="p">(</span><span class="s1">'Hello world!'</span><span class="p">));</span>
-</pre></div>
 
 <p>Query in index:</p>
 
@@ -88,7 +94,7 @@ It's very similar to CDbCriteria and has the same idea.</p>
 <span class="nv">$query</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ESphinxQuery</span><span class="p">(</span><span class="s1">'@(title,body) hello world'</span><span class="p">,</span> <span class="s1">'articles'</span><span class="p">,</span> <span class="nv">$criteria</span><span class="p">);</span>
 </pre></div>
 
-<p>Criteria can changing in work.</p>
+<p>Criteria can changing at work.</p>
 
 <div class="highlight highlight-php"><pre><span class="nv">$criteria</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ESphinxSearchCriteria</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">'mathMode'</span> <span class="o">=&gt;</span> <span class="nx">ESphinxMatch</span><span class="o">::</span><span class="na">EXTENDED</span><span class="p">));</span>
 <span class="nv">$criteria</span><span class="o">-&gt;</span><span class="na">addFilter</span><span class="p">(</span><span class="s1">'user_id'</span><span class="p">,</span> <span class="mi">1000</span><span class="p">);</span> <span class="c1">// add filter by user, we can use integer or integer array</span>
@@ -107,6 +113,29 @@ It's very similar to CDbCriteria and has the same idea.</p>
 <span class="nv">$criteria</span><span class="o">-&gt;</span><span class="na">deleteFilter</span><span class="p">(</span><span class="s1">'site'</span><span class="p">);</span> <span class="c1">// delete filter on site_id field</span>
 
 <span class="c1">// querying....</span>
+</pre></div>
+
+<h2>
+<a name="multi-queries" class="anchor" href="#multi-queries"><span class="octicon octicon-link"></span></a>Multi queries</h2>
+
+<p>One of the powerfull sphinx features is multi queries (packet queries). When you send two or more queries
+sphinx does internal optimisation for faster work.</p>
+
+<div class="highlight highlight-php"><pre><span class="nv">$query1</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ESphinxQuery</span><span class="p">(</span><span class="s1">''</span><span class="p">,</span> <span class="s1">'products'</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span><span class="s1">'filters'</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">'site_id'</span><span class="p">,</span> <span class="mi">123</span><span class="p">))));</span>
+<span class="nv">$query2</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ESphinxQuery</span><span class="p">(</span><span class="s1">''</span><span class="p">,</span> <span class="s1">'products'</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span><span class="s1">'filters'</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">'site_id'</span><span class="p">,</span> <span class="mi">321</span><span class="p">))));</span>
+
+<span class="nv">$results</span> <span class="o">=</span> <span class="nx">Yii</span><span class="o">::</span><span class="na">app</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">sphinx</span><span class="o">-&gt;</span><span class="na">executeQueries</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="nv">$query1</span><span class="p">,</span> <span class="nv">$query2</span><span class="p">));</span>
+</pre></div>
+
+<p>Another way to add queries:</p>
+
+<div class="highlight highlight-php"><pre><span class="nv">$query</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ESphinxQuery</span><span class="p">(</span><span class="s1">''</span><span class="p">,</span> <span class="s1">'products'</span><span class="p">,</span> <span class="k">array</span><span class="p">(</span><span class="s1">'filters'</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span><span class="k">array</span><span class="p">(</span><span class="s1">'site_id'</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="s1">'key'</span> <span class="o">=&gt;</span> <span class="s1">'site_id'</span><span class="p">)))));</span>
+<span class="nx">Yii</span><span class="o">::</span><span class="na">app</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">sphinx</span><span class="o">-&gt;</span><span class="na">addQuery</span><span class="p">(</span><span class="nv">$query</span><span class="p">);</span>
+
+<span class="c1">// change previous site_id filter value</span>
+<span class="nv">$query</span><span class="o">-&gt;</span><span class="na">criteria</span><span class="o">-&gt;</span><span class="na">addFilter</span><span class="p">(</span><span class="s1">'site_id'</span><span class="p">,</span> <span class="mi">321</span><span class="p">,</span> <span class="k">false</span><span class="p">,</span> <span class="s1">'site_id'</span><span class="p">);</span>
+
+<span class="nv">$results</span> <span class="o">=</span> <span class="nx">Yii</span><span class="o">::</span><span class="na">app</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">sphinx</span><span class="o">-&gt;</span><span class="na">runQueries</span><span class="p">();</span>
 </pre></div>
       </section>
     </div>
