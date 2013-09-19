@@ -1,7 +1,8 @@
 Yii Sphinx Component
 ====================
 
-Simple and powerful component for work with Sphinx search engine.
+Simple and powerful component for work with Sphinx search engine. This is a beta version, please help with testing and bug reports.
+You can find old stable version at "Releases page"
 
 Features
 --------
@@ -86,7 +87,7 @@ Multi queries
 One of the powerfull sphinx features is multi queries (packet queries). When you send two or more queries
 sphinx does internal optimisation for faster work.
 
-```
+```php
 $query1 = new ESphinxQuery('', 'products', array('filters' => array(array('site_id', 123))));
 $query2 = new ESphinxQuery('', 'products', array('filters' => array(array('site_id', 321))));
 
@@ -95,7 +96,7 @@ $results = Yii::app()->sphinx->executeQueries(array($query1, $query2));
 
 
 Another way to add queries:
-```
+```php
 $query = new ESphinxQuery('', 'products', array('filters' => array(array('site_id', 123, 'key' => 'site_id')))));
 Yii::app()->sphinx->addQuery($query);
 
