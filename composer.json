@@ -1,6 +1,6 @@
 {
     "name": "sergebezborodov/sphinx-yii",
-    "description": "Sphinx Api extension for Yii",
+    "description": "Extension for work with Sphinx Search.",
     "type": "library",
     "authors": [
         {
@@ -16,9 +16,10 @@
     ],
     "autoload": {
         "classmap": [
+            "ESphinxApiConnection.php",
             "ESphinxBaseConnection.php",
-            "ESphinxConnection.php",
             "ESphinxException.php",
+            "ESphinxMysqlConnection.php",
             "ESphinxQuery.php",
             "ESphinxResult.php",
             "ESphinxSearchCriteria.php",
