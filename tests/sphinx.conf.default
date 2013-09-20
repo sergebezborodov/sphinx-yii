@@ -47,7 +47,8 @@ indexer
 searchd
 {
 
-	listen=127.0.0.1:9876
+	listen=127.0.0.1:9877
+    listen=127.0.0.1:9888:mysql41
 	# log file, searchd run info is logged here
 	# optional, default is 'searchd.log'
 	log					= /tmp/test-searchd.log
