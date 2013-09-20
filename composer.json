@@ -16,6 +16,10 @@
         }
     ],
     "autoload": {
+        "files" : [
+            "ESphinxApiConnection.php",
+            "ESphinxMysqlConnection.php",
+        ],
         "classmap": [
             "ESphinxApiConnection.php",
             "ESphinxBaseConnection.php",
