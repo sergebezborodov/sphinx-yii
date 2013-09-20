@@ -21,7 +21,6 @@
             "ESphinxApiConnection.php",
             "ESphinxMysqlConnection.php",
             "ESphinxException.php",
-            "ESphinxMysqlConnection.php",
             "ESphinxQuery.php",
             "ESphinxResult.php",
             "ESphinxSearchCriteria.php",
