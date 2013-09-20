@@ -19,7 +19,7 @@
         "classmap": [
             "ESphinxBaseConnection.php",
             "ESphinxApiConnection.php",
-            "ESphinxMysqlConnection.php"
+            "ESphinxMysqlConnection.php",
             "ESphinxException.php",
             "ESphinxMysqlConnection.php",
             "ESphinxQuery.php",

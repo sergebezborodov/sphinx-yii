@@ -14,6 +14,11 @@ Features
 * Unit tests coverage
 
 
+How to install
+--------------
+
+
+
 Configure
 ----------
 
