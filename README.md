@@ -1,7 +1,9 @@
 Yii Sphinx Component
 ====================
 
-Simple and powerful component for work with Sphinx search engine. This is a beta version, please help with testing and bug reports.
+Simple and powerful component for work with Sphinx search engine.
+
+This is a beta version, please help with testing and bug reports.
 You can find old stable version at "releases" page
 
 Features
@@ -17,10 +19,38 @@ Features
 How to install
 --------------
 
+###1. via composer
+
+```javascript
+"repositories": [
+   {
+    "type": "vcs",
+    "url": "https://github.com/sergebezborodov/sphinx-yii"
+   }
+],
+"require": {
+    "sergebezborodov/sphinx-yii": "dev-master"
+}
+```
+
+in config:
+
+```php
+'components' => array(
+    'sphinx' => array(
+        'class' => 'vendor.sergebezborodov.sphinx-yii.ESphinxApiConnection', // sphinx api mode
+        //'class' => 'vendor.sergebezborodov.sphinx-yii.ESphinxMysqlConnection', for sphinx ql mode
+        'server' => array('localhost', 3386),
+        'connectionTimeout' => 3, // optional, default 0 - no limit
+        'queryTimeout'      => 5, // optional, default 0 - no limit
+    ),
+),
+```
 
 
-Configure
-----------
+###2. old school way
+
+Download and extract source for protected/extensions folder. In config add:
 
 ```php
 'import' => array(
@@ -75,6 +105,7 @@ $query = new ESphinxQuery('@(title,body) hello world', 'articles', $criteria);
 ```
 
 Criteria can changing at work.
+
 ```php
 $criteria = new ESphinxSearchCriteria(array('mathMode' => ESphinxMatch::EXTENDED));
 $criteria->addFilter('user_id', 1000); // add filter by user, we can use integer or integer array
@@ -110,6 +141,7 @@ $results = Yii::app()->sphinx->executeQueries(array($query1, $query2));
 
 
 Another way to add queries:
+
 ```php
 $query = new ESphinxQuery('', 'products', array('filters' => array(array('site_id', 123, 'key' => 'site_id')))));
 Yii::app()->sphinx->addQuery($query);
@@ -119,3 +151,14 @@ $query->criteria->addFilter('site_id', 321, false, 'site_id');
 
 $results = Yii::app()->sphinx->runQueries();
 ```
+
+Options
+-------
+
+####Versions
+ESphinxSearchCriteria includes all possible options of last sphinx beta.
+Be sure you are using right functions for your version.
+
+####Sort Methods
+For SPH_SORT_EXTENDED (ESphinxSort::EXTENDED) you should use setOrders() or addOrder() method.
+For others sort modes use setSortBy() for one field.
