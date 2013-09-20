@@ -33,7 +33,7 @@ How to install
 }
 ```
 
-in config:
+in config (assumes you have 'vendor' alias to composer directory):
 
 ```php
 'components' => array(
@@ -50,7 +50,7 @@ in config:
 
 ###2. old school way
 
-Download and extract source for protected/extensions folder. In config add:
+Download and extract source in protected/extensions folder. In config add:
 
 ```php
 'import' => array(
