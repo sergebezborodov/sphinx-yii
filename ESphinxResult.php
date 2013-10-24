@@ -47,6 +47,7 @@ class ESphinxResult extends CComponent implements Iterator, ArrayAccess, Countab
 	{
 		$this->_result = $result;
 	    $this->_matches = isset($result['matches']) ? $result['matches'] : array();
+        unset($this->_result['matches']);
 	}
 
 	/**
